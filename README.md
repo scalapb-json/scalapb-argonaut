@@ -1,5 +1,5 @@
 # scalapb-argonaut [![Build Status](https://travis-ci.org/scalapb-json/scalapb-argonaut.svg?branch=master)](https://travis-ci.org/scalapb-json/scalapb-argonaut)
-[![scaladoc](https://javadoc-badge.appspot.com/com.github.scalapb-json/scalapb-argonaut_2.12.svg?label=scaladoc)](https://javadoc-badge.appspot.com/com.github.scalapb-json/scalapb-argonaut_2.12/scalapb_argonaut/index.html?javadocio=true)
+[![scaladoc](https://javadoc-badge.appspot.com/com.github.scalapb-json/scalapb-argonaut_2.12.svg?label=scaladoc)](https://javadoc-badge.appspot.com/io.github.scalapb-json/scalapb-argonaut_2.12/scalapb_argonaut/index.html?javadocio=true)
 
 The structure of this project is hugely inspired by [scalapb-json4s](https://github.com/scalapb/scalapb-json4s)
 
