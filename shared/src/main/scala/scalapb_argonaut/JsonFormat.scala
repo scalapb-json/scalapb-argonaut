@@ -203,13 +203,35 @@ class Printer(
     case PInt(v) if fd.protoType.isTypeFixed32 => Json.jNumber(ScalapbJsonCommon.unsignedInt(v))
     case PInt(v) => Json.jNumber(v)
     case PLong(v) => formatLong(v, fd.protoType, formattingLongAsNumber)
-    case PDouble(v) => Json.jNumber(v)
-    case PFloat(v) => Json.jNumber(v)
+    case PDouble(v) =>
+      if(v.isPosInfinity) {
+        JsStringPosInfinity
+      } else if(v.isNegInfinity) {
+        JsStringNegInfinity
+      } else if(java.lang.Double.isNaN(v)) {
+        JsStringNaN
+      } else {
+        Json.jNumber(v)
+      }
+    case PFloat(v) =>
+      if(v.isPosInfinity) {
+        JsStringPosInfinity
+      } else if(v.isNegInfinity) {
+        JsStringNegInfinity
+      } else if(java.lang.Double.isNaN(v)) {
+        JsStringNaN
+      } else {
+        Json.jNumber(v)
+      }
     case PBoolean(v) => Json.jBool(v)
     case PString(v) => Json.jString(v)
     case PByteString(v) => Json.jString(java.util.Base64.getEncoder.encodeToString(v.toByteArray))
     case _: PMessage | PRepeated(_) | PEmpty => throw new RuntimeException("Should not happen")
   }
+
+  private[this] val JsStringPosInfinity = Json.jString("Infinity")
+  private[this] val JsStringNegInfinity = Json.jString("-Infinity")
+  private[this] val JsStringNaN = Json.jString("NaN")
 }
 
 class Parser(
