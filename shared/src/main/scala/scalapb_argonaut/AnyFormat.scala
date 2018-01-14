@@ -2,7 +2,6 @@ package scalapb_argonaut
 
 import com.google.protobuf.any.{Any => PBAny}
 import argonaut._
-import scala.language.existentials
 import scalapb_json._
 
 object AnyFormat {
