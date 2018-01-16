@@ -2,12 +2,12 @@ package scalapb_argonaut
 
 import com.google.protobuf.any.{Any => PBAny}
 import jsontest.anytests.{AnyTest, ManyAnyTest}
-import org.scalatest.{FlatSpec, MustMatchers}
+import utest._
 import argonaut.JsonParser.parse
 import scalapb_json._
 import EitherOps._
 
-class AnyFormatSpec extends FlatSpec with MustMatchers with JavaAssertions {
+object AnyFormatSpec extends TestSuite with JavaAssertions {
   val RawExample = AnyTest("test")
 
   val RawJson = parse(s"""{"field":"test"}""").getOrError
@@ -43,36 +43,58 @@ class AnyFormatSpec extends FlatSpec with MustMatchers with JavaAssertions {
 
   def UnregisteredParser = JsonFormat.parser
 
-  "Any" should "fail to serialize if its respective companion is not registered" in {
-    an[IllegalStateException] must be thrownBy UnregisteredPrinter.toJson(AnyExample)
-  }
+  val tests = Tests {
+    "Any should fail to serialize if its respective companion is not registered" - {
+      try {
+        UnregisteredPrinter.toJson(AnyExample)
+        sys.error("fail")
+      } catch {
+        case _: IllegalStateException =>
+      }
+    }
 
-  "Any" should "fail to deserialize if its respective companion is not registered" in {
-    a[JsonFormatException] must be thrownBy UnregisteredParser.fromJson[PBAny](AnyJson)
-  }
+    "Any should fail to deserialize if its respective companion is not registered" - {
+      try {
+        UnregisteredParser.fromJson[PBAny](AnyJson)
+        sys.error("fail")
+      } catch {
+        case _: JsonFormatException =>
+      }
+    }
 
-  "Any" should "serialize correctly if its respective companion is registered" in {
-    ScalaJsonPrinter.toJson(AnyExample) must be(AnyJson)
-  }
+    "Any should serialize correctly if its respective companion is registered" - {
+      assert(ScalaJsonPrinter.toJson(AnyExample) == AnyJson)
+    }
 
-  "Any" should "fail to serialize with a custom URL prefix if specified" in {
-    an[IllegalStateException] must be thrownBy ScalaJsonPrinter.toJson(CustomPrefixAny)
-  }
+    "Any should fail to serialize with a custom URL prefix if specified" - {
+      try {
+        ScalaJsonPrinter.toJson(CustomPrefixAny)
+        sys.error("fail")
+      } catch {
+        case _: IllegalStateException =>
+      }
+    }
 
-  "Any" should "fail to deserialize for a non-Google-prefixed type URL" in {
-    a[JsonFormatException] must be thrownBy ScalaJsonParser.fromJson[PBAny](CustomPrefixJson)
-  }
+    "Any should fail to deserialize for a non-Google-prefixed type URL" - {
+      try {
+        ScalaJsonParser.fromJson[PBAny](CustomPrefixJson)
+        sys.error("fail")
+      } catch {
+        case _: JsonFormatException =>
+      }
+    }
 
-  "Any" should "deserialize correctly if its respective companion is registered" in {
-    ScalaJsonParser.fromJson[PBAny](AnyJson) must be(AnyExample)
-  }
+    "Any should deserialize correctly if its respective companion is registered" - {
+      assert(ScalaJsonParser.fromJson[PBAny](AnyJson) == AnyExample)
+    }
 
-  "Any" should "resolve printers recursively" in {
-    val packed = PBAny.pack(ManyExample)
-    ScalaJsonPrinter.toJson(packed) must be(ManyPackedJson)
-  }
+    "Any should resolve printers recursively" - {
+      val packed = PBAny.pack(ManyExample)
+      assert(ScalaJsonPrinter.toJson(packed) == ManyPackedJson)
+    }
 
-  "Any" should "resolve parsers recursively" in {
-    ScalaJsonParser.fromJson[PBAny](ManyPackedJson).unpack[ManyAnyTest] must be(ManyExample)
+    "Any should resolve parsers recursively" - {
+      assert(ScalaJsonParser.fromJson[PBAny](ManyPackedJson).unpack[ManyAnyTest] == ManyExample)
+    }
   }
 }

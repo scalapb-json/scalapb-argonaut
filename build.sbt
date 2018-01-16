@@ -17,7 +17,7 @@ val tagOrHash = Def.setting {
 
 val unusedWarnings = Seq("-Ywarn-unused", "-Ywarn-unused-import")
 
-val scalapbArgonaut = crossProject(JVMPlatform, JSPlatform)
+val scalapbArgonaut = crossProject(JVMPlatform, JSPlatform, NativePlatform)
   .in(file("."))
   .enablePlugins(BuildInfoPlugin)
   .settings(
@@ -55,6 +55,10 @@ val scalapbArgonaut = crossProject(JVMPlatform, JSPlatform)
       "com.google.protobuf" % "protobuf-java" % protobufVersion % "protobuf"
     )
   )
+  .nativeSettings(
+    crossScalaVersions := Scala211 :: Nil,
+    nativeLinkStubs := true
+  )
   .jsSettings(
     buildInfoKeys ++= Seq[BuildInfoKey](
       "scalajsVersion" -> scalaJSVersion
@@ -63,7 +67,17 @@ val scalapbArgonaut = crossProject(JVMPlatform, JSPlatform)
       val a = (baseDirectory in LocalRootProject).value.toURI.toString
       val g = "https://raw.githubusercontent.com/scalapb-json/scalapb-argonaut/" + tagOrHash.value
       s"-P:scalajs:mapSourceURI:$a->$g/"
-    },
+    }
+  )
+  .platformsSettings(JVMPlatform, JSPlatform)(
+    Seq((Compile, "main"), (Test, "test")).map {
+      case (x, y) =>
+        unmanagedSourceDirectories in x += {
+          baseDirectory.value.getParentFile / s"jvm_js/src/${y}/scala/"
+        }
+    }
+  )
+  .platformsSettings(JSPlatform, NativePlatform)(
     PB.targets in Test := Seq(
       scalapb.gen(javaConversions = false) -> (sourceManaged in Test).value
     )
@@ -105,10 +119,11 @@ lazy val commonSettings = Seq[Def.SettingsDefinition](
   argonautVersion := "6.2.1",
   libraryDependencies ++= Seq(
     "io.github.scalapb-json" %%% "scalapb-json-common" % scalapbJsonCommonVersion.value,
-    "com.thesamet.scalapb" %%% "scalapb-runtime" % scalapbVersion % "protobuf,test",
+    "com.thesamet.scalapb" %% "scalapb-runtime" % scalapbVersion % "protobuf,test",
     "io.argonaut" %%% "argonaut" % argonautVersion.value,
-    "org.scalatest" %%% "scalatest" % "3.0.4" % "test"
+    "com.lihaoyi" %%% "utest" % "0.6.3" % "test"
   ),
+  testFrameworks += new TestFramework("utest.runner.Framework"),
   pomExtra in Global := {
     <url>https://github.com/scalapb-json/scalapb-argonaut</url>
       <scm>
@@ -161,6 +176,7 @@ lazy val commonSettings = Seq[Def.SettingsDefinition](
       },
       enableCrossBuild = true
     ),
+    releaseStepCommandAndRemaining(s"; ++ ${Scala211}! ; scalapbArgonautNative/publishSigned"),
     setNextVersion,
     commitNextVersion,
     releaseStepCommand("sonatypeReleaseAll"),
@@ -171,3 +187,20 @@ lazy val commonSettings = Seq[Def.SettingsDefinition](
 
 val scalapbArgonautJVM = scalapbArgonaut.jvm
 val scalapbArgonautJS = scalapbArgonaut.js
+val scalapbArgonautNative = scalapbArgonaut.native
+
+val root = project
+  .in(file("."))
+  .settings(
+    commonSettings,
+    publishArtifact := false,
+    publish := {},
+    publishLocal := {},
+    PgpKeys.publishSigned := {},
+    PgpKeys.publishLocalSigned := {}
+  )
+  .aggregate(
+    scalapbArgonautJVM,
+    scalapbArgonautJS
+    // exclude Native on purpose
+  )

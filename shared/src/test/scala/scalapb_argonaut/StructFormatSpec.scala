@@ -1,19 +1,20 @@
 package scalapb_argonaut
 
-import org.scalatest.{FlatSpec, MustMatchers}
+import utest._
 import com.google.protobuf.struct._
 import jsontest.test3.StructTest
 
-class StructFormatSpec extends FlatSpec with MustMatchers with JavaAssertions {
-  "Empty value" should "be serialized to null" in {
-    JsonFormat.toJsonString(Value()) must be("null")
-  }
-
-  "NullValue" should "be serialized and parsed from JSON correctly" in {
-    JsonFormat.fromJsonString[StructTest]("""{"nv": null}""") must be(StructTest())
-    JsonFormat.fromJsonString[StructTest]("""{"nv": "NULL_VALUE"}""") must be(StructTest())
-    JsonFormat.fromJsonString[StructTest]("""{"nv": 0}""") must be(StructTest())
-    JsonFormat.fromJsonString[StructTest]("""{"repNv": [null, 0, null]}""") must be(
-      StructTest(repNv = Seq(NullValue.NULL_VALUE, NullValue.NULL_VALUE, NullValue.NULL_VALUE)))
+object StructFormatSpec extends TestSuite with JavaAssertions {
+  override val tests = Tests {
+    "Empty value should be serialized to null" - {
+      assert(JsonFormat.toJsonString(Value()) == "null")
+    }
+    "NullValue should be serialized and parsed from JSON correctly" - {
+      assert(JsonFormat.fromJsonString[StructTest]("""{"nv": null}""") == StructTest())
+      assert(JsonFormat.fromJsonString[StructTest]("""{"nv": "NULL_VALUE"}""") == StructTest())
+      assert(JsonFormat.fromJsonString[StructTest]("""{"nv": 0}""") == StructTest())
+      assert(JsonFormat.fromJsonString[StructTest]("""{"repNv": [null, 0, null]}""") ==
+        StructTest(repNv = Seq(NullValue.NULL_VALUE, NullValue.NULL_VALUE, NullValue.NULL_VALUE)))
+    }
   }
 }

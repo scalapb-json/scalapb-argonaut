@@ -4,7 +4,6 @@ import com.google.protobuf.ByteString
 import com.google.protobuf.descriptor.FieldDescriptorProto
 import com.google.protobuf.duration.Duration
 import com.google.protobuf.struct.NullValue
-import com.google.protobuf.timestamp.Timestamp
 import argonaut._
 import scalapb_json._
 
@@ -224,7 +223,7 @@ class Printer(
       }
     case PBoolean(v) => Json.jBool(v)
     case PString(v) => Json.jString(v)
-    case PByteString(v) => Json.jString(java.util.Base64.getEncoder.encodeToString(v.toByteArray))
+    case PByteString(v) => Json.jString(ScalapbArgonautPlatform.encodeToString(v.toByteArray))
     case _: PMessage | PRepeated(_) | PEmpty => throw new RuntimeException("Should not happen")
   }
 
@@ -359,22 +358,12 @@ object JsonFormat {
   import com.google.protobuf.wrappers
   import scalapb_json.ScalapbJsonCommon._
 
-  val DefaultRegistry = FormatRegistry()
+  val DefaultRegistry = ScalapbArgonautPlatform.registerPlatformWriters(FormatRegistry())
     .registerWriter(
       (d: Duration) => Json.jString(Durations.writeDuration(d)), {
         _.string match {
           case Some(str) =>
             Durations.parseDuration(str)
-          case _ =>
-            throw new JsonFormatException("Expected a string.")
-        }
-      }
-    )
-    .registerWriter(
-      (t: Timestamp) => Json.jString(Timestamps.writeTimestamp(t)), {
-        _.string match {
-          case Some(str) =>
-            Timestamps.parseTimestamp(str)
           case _ =>
             throw new JsonFormatException("Expected a string.")
         }
@@ -574,7 +563,7 @@ object JsonFormat {
       case ScalaType.ByteString =>
         value.string match {
           case Some(s) =>
-            PByteString(ByteString.copyFrom(java.util.Base64.getDecoder.decode(s)))
+            PByteString(ByteString.copyFrom(ScalapbArgonautPlatform.decode(s)))
           case None =>
             onError
         }

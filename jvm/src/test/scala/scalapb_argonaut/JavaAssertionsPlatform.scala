@@ -2,10 +2,10 @@ package scalapb_argonaut
 
 import com.google.protobuf.util.JsonFormat.{TypeRegistry => JavaTypeRegistry}
 import scalapb.{GeneratedMessage, GeneratedMessageCompanion, JavaProtoSupport, Message}
-import org.scalatest.MustMatchers
+import utest._
 
 trait JavaAssertionsPlatform {
-  self: MustMatchers with JavaAssertions =>
+  self: TestSuite with JavaAssertions =>
 
   def registeredCompanions: Seq[GeneratedMessageCompanion[_]]
 
@@ -23,10 +23,10 @@ trait JavaAssertionsPlatform {
       cmp.asInstanceOf[JavaProtoSupport[T, com.google.protobuf.GeneratedMessageV3]].toJavaProto(v))
 
     import argonaut.JsonParser.parse
-    parse(scalaJson).isRight must be(true)
-    parse(scalaJson) must be(parse(javaJson))
+    assert(parse(scalaJson).isRight)
+    assert(parse(scalaJson) == parse(javaJson))
     if (checkRoundtrip) {
-      ScalaJsonParser.fromJsonString[T](scalaJson) must be(v)
+      assert(ScalaJsonParser.fromJsonString[T](scalaJson) == v)
     }
   }
 

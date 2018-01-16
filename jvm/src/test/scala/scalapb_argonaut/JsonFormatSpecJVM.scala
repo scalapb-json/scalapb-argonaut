@@ -1,13 +1,13 @@
 package scalapb_argonaut
 
-import org.scalatest.{FlatSpec, MustMatchers, OptionValues}
+import utest._
 import jsontest.test._
 import com.google.protobuf.util.{JsonFormat => JavaJsonFormat}
 import com.google.protobuf.any.{Any => PBAny}
 import com.google.protobuf.util.JsonFormat.{TypeRegistry => JavaTypeRegistry}
 import scalapb_json._
 
-class JsonFormatSpecJVM extends FlatSpec with MustMatchers with OptionValues {
+object JsonFormatSpecJVM extends TestSuite {
 
   val TestProto = MyTest().update(
     _.hello := "Foo",
@@ -25,27 +25,31 @@ class JsonFormatSpecJVM extends FlatSpec with MustMatchers with OptionValues {
     _.optBool := false
   )
 
-  "fromJsonString" should "read json produced by Java" in {
-    val javaJson = JavaJsonFormat.printer().print(MyTest.toJavaProto(TestProto))
-    JsonFormat.fromJsonString[MyTest](javaJson) must be(TestProto)
-  }
+  override val tests = Tests {
 
-  "Java parser" should "read json strings produced by us" in {
-    val b = jsontest.Test.MyTest.newBuilder
-    JavaJsonFormat.parser().merge(JsonFormat.toJsonString(TestProto), b)
-    TestProto must be(MyTest.fromJavaProto(b.build))
-  }
+    "fromJsonString should read json produced by Java" - {
+      val javaJson = JavaJsonFormat.printer().print(MyTest.toJavaProto(TestProto))
+      assert(JsonFormat.fromJsonString[MyTest](javaJson) == TestProto)
+    }
 
-  val anyEnabledJavaTypeRegistry =
-    JavaTypeRegistry.newBuilder().add(TestProto.companion.javaDescriptor).build()
-  val anyEnabledJavaPrinter = JavaJsonFormat.printer().usingTypeRegistry(anyEnabledJavaTypeRegistry)
-  val anyEnabledTypeRegistry = TypeRegistry.empty.addMessageByCompanion(TestProto.companion)
-  val anyEnabledParser = new Parser(typeRegistry = anyEnabledTypeRegistry)
+    "Java parser should read json strings produced by us" - {
+      val b = jsontest.Test.MyTest.newBuilder
+      JavaJsonFormat.parser().merge(JsonFormat.toJsonString(TestProto), b)
+      assert(TestProto == MyTest.fromJavaProto(b.build))
+    }
 
-  "Any" should "parse JSON produced by Java for a packed TestProto" in {
-    val javaAny = com.google.protobuf.Any.pack(MyTest.toJavaProto(TestProto))
-    val javaJson = anyEnabledJavaPrinter.print(javaAny)
-    anyEnabledParser.fromJsonString[PBAny](javaJson).unpack[MyTest] must be(TestProto)
+    val anyEnabledJavaTypeRegistry =
+      JavaTypeRegistry.newBuilder().add(TestProto.companion.javaDescriptor).build()
+    val anyEnabledJavaPrinter =
+      JavaJsonFormat.printer().usingTypeRegistry(anyEnabledJavaTypeRegistry)
+    val anyEnabledTypeRegistry = TypeRegistry.empty.addMessageByCompanion(TestProto.companion)
+    val anyEnabledParser = new Parser(typeRegistry = anyEnabledTypeRegistry)
+
+    "Any should parse JSON produced by Java for a packed TestProto" - {
+      val javaAny = com.google.protobuf.Any.pack(MyTest.toJavaProto(TestProto))
+      val javaJson = anyEnabledJavaPrinter.print(javaAny)
+      assert(anyEnabledParser.fromJsonString[PBAny](javaJson).unpack[MyTest] == TestProto)
+    }
   }
 
 }

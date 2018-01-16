@@ -2,11 +2,9 @@ package scalapb_argonaut
 
 import scalapb_json.ScalapbJsonCommon.GenericCompanion
 import scalapb.GeneratedMessageCompanion
-import org.scalatest.MustMatchers
 import scalapb_json._
 
-trait JavaAssertions extends JavaAssertionsPlatform {
-  self: MustMatchers =>
+trait JavaAssertions extends JavaAssertionsPlatform { self: utest.TestSuite =>
 
   def registeredCompanions: Seq[GeneratedMessageCompanion[_]] = Seq.empty
 

@@ -1,0 +1,3 @@
+package scalapb_argonaut
+
+trait JavaAssertionsPlatform

@@ -1,16 +1,18 @@
 package scalapb_argonaut
 
 import com.google.protobuf.any.{Any => PBAny}
-import org.scalatest.{FlatSpec, MustMatchers}
+import utest._
 import jsontest.anytests.AnyTest
 
-class AnyFormatSpecJVM extends FlatSpec with MustMatchers with JavaAssertions {
+object AnyFormatSpecJVM extends TestSuite with JavaAssertions {
 
   override def registeredCompanions = Seq(AnyTest)
 
-  "Any" should "be serialized the same as in Java (and parsed back to original)" in {
-    val RawExample = AnyTest("test")
-    val AnyExample = PBAny.pack(RawExample)
-    assertJsonIsSameAsJava(AnyExample)
+  override val tests = Tests {
+    "Any should be serialized the same as in Java (and parsed back to original)" - {
+      val RawExample = AnyTest("test")
+      val AnyExample = PBAny.pack(RawExample)
+      assertJsonIsSameAsJava(AnyExample)
+    }
   }
 }
