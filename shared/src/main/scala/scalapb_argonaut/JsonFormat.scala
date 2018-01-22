@@ -1,6 +1,7 @@
 package scalapb_argonaut
 
 import com.google.protobuf.ByteString
+import com.google.protobuf.field_mask.FieldMask
 import com.google.protobuf.descriptor.FieldDescriptorProto
 import com.google.protobuf.duration.Duration
 import com.google.protobuf.struct.NullValue
@@ -364,6 +365,16 @@ object JsonFormat {
         _.string match {
           case Some(str) =>
             Durations.parseDuration(str)
+          case _ =>
+            throw new JsonFormatException("Expected a string.")
+        }
+      }
+    )
+    .registerWriter(
+      (f: FieldMask) => Json.jString(ScalapbJsonCommon.fieldMaskToJsonString(f)), {
+        _.string match {
+          case Some(str) =>
+            ScalapbJsonCommon.fieldMaskFromJsonString(str)
           case _ =>
             throw new JsonFormatException("Expected a string.")
         }

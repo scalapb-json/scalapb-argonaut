@@ -6,6 +6,7 @@ import utest._
 import jsontest.test._
 import jsontest.test3._
 import com.google.protobuf.any.{Any => PBAny}
+import com.google.protobuf.field_mask.FieldMask
 import jsontest.custom_collection.{Guitar, Studio}
 import scalapb_json._
 import EitherOps._
@@ -401,6 +402,14 @@ object JsonFormatSpec extends TestSuite {
       val studioJsonString = """{"guitars":[{"numberOfStrings":12}]}"""
       val studio = JsonFormat.fromJsonString[Studio](studioJsonString)
       assert(studio == expectedStudio)
+    }
+
+    "FieldMask" - {
+      // https://github.com/google/protobuf/blob/47b7d2c7ca/java/util/src/test/java/com/google/protobuf/util/JsonFormatTest.java#L761-L770
+      val message = TestFieldMask(Some(FieldMask(Seq("foo.bar", "baz", "foo_bar.baz"))))
+      val json = """{"fieldMaskValue":"foo.bar,baz,fooBar.baz"}"""
+      assert(JsonFormat.toJsonString(message) == json)
+      assert(JsonFormat.fromJsonString[TestFieldMask](json) == message)
     }
   }
 }
