@@ -404,6 +404,11 @@ object JsonFormatSpec extends TestSuite {
       assert(studio == expectedStudio)
     }
 
+    "formatEnumAsNumber should format enums as number" - {
+      val p = MyTest().update(_.optEnum := MyEnum.V2)
+      assert(new Printer(formattingEnumsAsNumber = true).toJson(p) == parse("""{"optEnum":2}""").getOrError)
+    }
+
     "FieldMask" - {
       // https://github.com/google/protobuf/blob/47b7d2c7ca/java/util/src/test/java/com/google/protobuf/util/JsonFormatTest.java#L761-L770
       val message = TestFieldMask(Some(FieldMask(Seq("foo.bar", "baz", "foo_bar.baz"))))
