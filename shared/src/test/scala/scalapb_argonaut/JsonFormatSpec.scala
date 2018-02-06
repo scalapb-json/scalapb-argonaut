@@ -401,6 +401,11 @@ class JsonFormatSpec extends FlatSpec with MustMatchers with OptionValues {
     studio must be(expectedStudio)
   }
 
+  "formatEnumAsNumber" should "format enums as number" in {
+    val p = MyTest().update(_.optEnum := MyEnum.V2)
+    assert(new Printer(formattingEnumsAsNumber = true).toJson(p) == parse("""{"optEnum":2}""").getOrError)
+  }
+
   "FieldMask" should "work correctly" in {
     // https://github.com/google/protobuf/blob/47b7d2c7ca/java/util/src/test/java/com/google/protobuf/util/JsonFormatTest.java#L761-L770
     val message = TestFieldMask(Some(FieldMask(Seq("foo.bar", "baz", "foo_bar.baz"))))
