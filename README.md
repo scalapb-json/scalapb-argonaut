@@ -17,6 +17,10 @@ for scala-js, scala-native
 libraryDependencies += "io.github.scalapb-json" %%% "scalapb-argonaut" % "0.2.0-M2"
 ```
 
+### for ScalaPB 0.6.x
+
+see https://github.com/scalapb-json/scalapb-argonaut/tree/0.1.x
+
 ## Usage
 
 There are four functions you can use directly to serialize/deserialize your messages:
