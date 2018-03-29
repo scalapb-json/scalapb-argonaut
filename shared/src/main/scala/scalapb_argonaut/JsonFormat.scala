@@ -225,7 +225,7 @@ class Printer(
       }
     case PBoolean(v) => Json.jBool(v)
     case PString(v) => Json.jString(v)
-    case PByteString(v) => Json.jString(ScalapbArgonautPlatform.encodeToString(v.toByteArray))
+    case PByteString(v) => Json.jString(java.util.Base64.getEncoder.encodeToString(v.toByteArray))
     case _: PMessage | PRepeated(_) | PEmpty => throw new RuntimeException("Should not happen")
   }
 
@@ -575,7 +575,7 @@ object JsonFormat {
       case ScalaType.ByteString =>
         value.string match {
           case Some(s) =>
-            PByteString(ByteString.copyFrom(ScalapbArgonautPlatform.decode(s)))
+            PByteString(ByteString.copyFrom(java.util.Base64.getDecoder.decode(s)))
           case None =>
             onError
         }

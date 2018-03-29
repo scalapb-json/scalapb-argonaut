@@ -18,10 +18,4 @@ private[scalapb_argonaut] object ScalapbArgonautPlatform {
       }
     )
   }
-
-  def encodeToString(bytes: Array[Byte]): String =
-    java.util.Base64.getEncoder.encodeToString(bytes)
-
-  def decode(str: String): Array[Byte] =
-    java.util.Base64.getDecoder.decode(str)
 }
