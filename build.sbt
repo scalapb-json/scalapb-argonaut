@@ -115,7 +115,7 @@ lazy val commonSettings = Seq[Def.SettingsDefinition](
   Project.inConfig(Test)(sbtprotoc.ProtocPlugin.protobufConfigSettings),
   PB.targets in Compile := Nil,
   PB.protoSources in Test := Seq(file("shared/src/test/protobuf")),
-  scalapbJsonCommonVersion := "0.2.1",
+  scalapbJsonCommonVersion := "0.2.2",
   argonautVersion := "6.2.1",
   libraryDependencies ++= Seq(
     "io.github.scalapb-json" %%% "scalapb-json-common" % scalapbJsonCommonVersion.value,
