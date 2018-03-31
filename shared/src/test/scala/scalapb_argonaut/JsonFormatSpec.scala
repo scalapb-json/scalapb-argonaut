@@ -154,7 +154,16 @@ object JsonFormatSpec extends TestSuite {
       assert(JsonFormat.fromJsonString[MyTest3]("""{"treat": {}}""") == 
         MyTest3(trickOrTreat = MyTest3.TrickOrTreat.Treat(MyTest3())))
     }
-  
+
+    "JsonFormat should encode and decode enums for proto3" - {
+      val v1Value = MyTest3(optEnum = MyTest3.MyEnum3.V1)
+      assert(JsonFormat.toJson(v1Value) == parse("""{"optEnum": "V1"}""").getOrError)
+      val defaultValue = MyTest3(optEnum = MyTest3.MyEnum3.UNKNOWN)
+      assert(JsonFormat.toJson(defaultValue) == parse("""{}""").getOrError)
+      assert(JsonFormat.fromJsonString[MyTest3](JsonFormat.toJsonString(v1Value)) == v1Value)
+      assert(JsonFormat.fromJsonString[MyTest3](JsonFormat.toJsonString(defaultValue)) == defaultValue)
+    }
+
     "parsing one offs should work correctly for issue 315" - {
       assert(JsonFormat.fromJsonString[jsontest.issue315.Msg]("""
       {
