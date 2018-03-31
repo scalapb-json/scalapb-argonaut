@@ -105,53 +105,53 @@ object JsonFormatSpec extends TestSuite {
     "Empty object should give empty json" - {
       assert(JsonFormat.toJson(MyTest()) == Json.obj())
     }
-  
+
     "Empty object should give empty json for MyTest3" - {
       assert(JsonFormat.toJson(MyTest3()) == Json.obj())
     }
-  
+
     "Zero maps should give correct json" - {
       assert(JsonFormat.toJson(
         MyTest(
           stringToInt32 = Map("" -> 17),
           intToMytest = Map(0 -> MyTest()),
-          fixed64ToBytes = Map(0L -> com.google.protobuf.ByteString.copyFromUtf8("foobar")))) == 
+          fixed64ToBytes = Map(0L -> com.google.protobuf.ByteString.copyFromUtf8("foobar")))) ==
         parse("""|{
                    |  "stringToInt32": {"": 17},
                    |  "intToMytest": {"0": {}},
                    |  "fixed64ToBytes": {"0": "Zm9vYmFy"}
                    |}""".stripMargin).getOrError)
     }
-  
+
     "Zero maps should give correct json for MyTest3" - {
       assert(JsonFormat.toJson(
         MyTest3(
           stringToInt32 = Map("" -> 17),
           intToMytest = Map(0 -> MyTest()),
-          fixed64ToBytes = Map(0L -> com.google.protobuf.ByteString.copyFromUtf8("foobar")))) == 
+          fixed64ToBytes = Map(0L -> com.google.protobuf.ByteString.copyFromUtf8("foobar")))) ==
         parse("""|{
                    |  "stringToInt32": {"": 17},
                    |  "intToMytest": {"0": {}},
                    |  "fixed64ToBytes": {"0": "Zm9vYmFy"}
                    |}""".stripMargin).getOrError)
     }
-  
+
     "Set treat should give correct json" - {
-      assert(JsonFormat.toJson(MyTest(trickOrTreat = MyTest.TrickOrTreat.Treat(MyTest()))) == 
+      assert(JsonFormat.toJson(MyTest(trickOrTreat = MyTest.TrickOrTreat.Treat(MyTest()))) ==
         parse("""{"treat": {}}""").getOrError)
     }
-  
+
     "Parse treat should give correct proto with proto2" - {
-      assert(JsonFormat.fromJsonString[MyTest]("""{"treat": {"hello": "x"}}""") == 
+      assert(JsonFormat.fromJsonString[MyTest]("""{"treat": {"hello": "x"}}""") ==
         MyTest(trickOrTreat = MyTest.TrickOrTreat.Treat(MyTest(hello = Some("x")))))
-      assert(JsonFormat.fromJsonString[MyTest]("""{"treat": {}}""") == 
+      assert(JsonFormat.fromJsonString[MyTest]("""{"treat": {}}""") ==
         MyTest(trickOrTreat = MyTest.TrickOrTreat.Treat(MyTest())))
     }
-  
+
     "Parse treat should give correct proto with proto3" - {
-      assert(JsonFormat.fromJsonString[MyTest3]("""{"treat": {"s": "x"}}""") == 
+      assert(JsonFormat.fromJsonString[MyTest3]("""{"treat": {"s": "x"}}""") ==
         MyTest3(trickOrTreat = MyTest3.TrickOrTreat.Treat(MyTest3(s = "x"))))
-      assert(JsonFormat.fromJsonString[MyTest3]("""{"treat": {}}""") == 
+      assert(JsonFormat.fromJsonString[MyTest3]("""{"treat": {}}""") ==
         MyTest3(trickOrTreat = MyTest3.TrickOrTreat.Treat(MyTest3())))
     }
 
@@ -171,12 +171,12 @@ object JsonFormatSpec extends TestSuite {
             "foo" : {
               "cols" : "1"
             }
-      }""") == 
+      }""") ==
         jsontest.issue315.Msg(
           baz = "1",
           someUnion = jsontest.issue315.Msg.SomeUnion.Foo(jsontest.issue315.Foo(cols = "1"))))
     }
-  
+
     "parsing null should give default value" - {
       assert(JsonFormat.fromJsonString[jsontest.test.MyTest]("""
       {
@@ -186,17 +186,17 @@ object JsonFormatSpec extends TestSuite {
             "repEnum": null
       }""") == jsontest.test.MyTest())
     }
-  
+
     "TestProto should be TestJson when converted to Proto" - {
       assert(JsonFormat.toJson(TestProto) == parse(TestJson).getOrError)
     }
-  
+
     "TestJson should be TestProto when parsed from json" - {
       assert(JsonFormat.fromJsonString[MyTest](TestJson) == TestProto)
     }
-  
+
     "Empty object should give full json if including default values" - {
-      assert(new Printer(includingDefaultValueFields = true).toJson(MyTest()) == 
+      assert(new Printer(includingDefaultValueFields = true).toJson(MyTest()) ==
         parse("""{
             |  "hello": "",
             |  "foobar": 0,
@@ -217,10 +217,10 @@ object JsonFormatSpec extends TestSuite {
             |}""".stripMargin).getOrError
       )
     }
-  
+
     "Empty object should with preserve field names should work" - {
       assert(new Printer(includingDefaultValueFields = true, preservingProtoFieldNames = true)
-        .toJson(MyTest()) == 
+        .toJson(MyTest()) ==
         parse("""{
             |  "hello": "",
             |  "foobar": 0,
@@ -241,16 +241,16 @@ object JsonFormatSpec extends TestSuite {
             |}""".stripMargin).getOrError
       )
     }
-  
+
     "TestProto should format int64 as JSON string" - {
       assert(new Printer().print(MyTest(bazinga = Some(642))) == """{"bazinga":"642"}""")
     }
-  
+
     "TestProto should format int64 as JSON number" - {
-      assert(new Printer(formattingLongAsNumber = true).print(MyTest(bazinga = Some(642))) == 
+      assert(new Printer(formattingLongAsNumber = true).print(MyTest(bazinga = Some(642))) ==
         """{"bazinga":642}""")
     }
-  
+
     "TestProto should parse numbers formatted as JSON string" - {
       val parser = new Parser()
       def validateAccepts(json: String, expected: IntFields) = {
@@ -262,7 +262,7 @@ object JsonFormatSpec extends TestSuite {
       } catch {
         case _: JsonFormatException =>
       }
-  
+
       // int32
       validateAccepts("""{"int":"642"}""", IntFields(int = Some(642)))
       validateAccepts("""{"int":"-1"}""", IntFields(int = Some(-1)))
@@ -270,7 +270,7 @@ object JsonFormatSpec extends TestSuite {
       validateAccepts(s"""{"int":"${Integer.MIN_VALUE}"}""", IntFields(int = Some(Integer.MIN_VALUE)))
       validateRejects(s"""{"int":"${Integer.MAX_VALUE.toLong + 1}"}""")
       validateRejects(s"""{"int":"${Integer.MIN_VALUE.toLong - 1}"}""")
-  
+
       // int64
       validateAccepts("""{"long":"642"}""", IntFields(long = Some(642L)))
       validateAccepts("""{"long":"-1"}""", IntFields(long = Some(-1L)))
@@ -278,19 +278,19 @@ object JsonFormatSpec extends TestSuite {
       validateAccepts(s"""{"long":"${Long.MinValue}"}""", IntFields(long = Some(Long.MinValue)))
       validateRejects(s"""{"long":"${BigInt(Long.MaxValue) + 1}"}""")
       validateRejects(s"""{"long":"${BigInt(Long.MinValue) - 1}"}""")
-  
+
       // uint32
       val uint32max: Long = (1L << 32) - 1
       validateAccepts(s"""{"uint":"$uint32max"}""", IntFields(uint = Some(uint32max.toInt)))
       validateRejects(s"""{"uint":"${uint32max + 1}"}""")
       validateRejects("""{"uint":"-1"}""")
-  
+
       // uint64
       val uint64max: BigInt = (BigInt(1) << 64) - 1
       validateAccepts(s"""{"ulong":"$uint64max"}""", IntFields(ulong = Some(uint64max.toLong)))
       validateRejects(s"""{"ulong":"${uint64max + 1}"}""")
       validateRejects("""{"ulong":"-1"}""")
-  
+
       // sint32
       validateAccepts(
         s"""{"sint":"${Integer.MAX_VALUE}"}""",
@@ -300,54 +300,54 @@ object JsonFormatSpec extends TestSuite {
         IntFields(sint = Some(Integer.MIN_VALUE)))
       validateRejects(s"""{"sint":"${Integer.MAX_VALUE.toLong + 1}"}""")
       validateRejects(s"""{"sint":"${Integer.MIN_VALUE.toLong - 1}"}""")
-  
+
       // sint64
       validateAccepts(s"""{"slong":"${Long.MaxValue}"}""", IntFields(slong = Some(Long.MaxValue)))
       validateAccepts(s"""{"slong":"${Long.MinValue}"}""", IntFields(slong = Some(Long.MinValue)))
       validateRejects(s"""{"slong":"${BigInt(Long.MaxValue) + 1}"}""")
       validateRejects(s"""{"slong":"${BigInt(Long.MinValue) - 1}"}""")
-  
+
       // fixed32
       validateAccepts(s"""{"fixint":"$uint32max"}""", IntFields(fixint = Some(uint32max.toInt)))
       validateRejects(s"""{"fixint":"${uint32max + 1}"}""")
       validateRejects("""{"fixint":"-1"}""")
-  
+
       // fixed64
       validateAccepts(s"""{"fixlong":"$uint64max"}""", IntFields(fixlong = Some(uint64max.toLong)))
       validateRejects(s"""{"fixlong":"${uint64max + 1}"}""")
       validateRejects("""{"fixlong":"-1"}""")
-  
+
     }
-  
+
     "TestProto should produce valid JSON output for unsigned integers" - {
       val uint32max: Long = (1L << 32) - 1
-      assert(JsonFormat.toJson(IntFields(uint = Some(uint32max.toInt))) == 
+      assert(JsonFormat.toJson(IntFields(uint = Some(uint32max.toInt))) ==
         parse(s"""{"uint":$uint32max}""").getOrError)
       assert(JsonFormat.toJson(IntFields(uint = Some(1))) == parse(s"""{"uint":1}""").getOrError)
-      assert(JsonFormat.toJson(IntFields(fixint = Some(uint32max.toInt))) == 
+      assert(JsonFormat.toJson(IntFields(fixint = Some(uint32max.toInt))) ==
         parse(s"""{"fixint":$uint32max}""").getOrError)
       assert(JsonFormat.toJson(IntFields(fixint = Some(1))) == parse(s"""{"fixint":1}""").getOrError)
       val uint64max: BigInt = (BigInt(1) << 64) - 1
-      assert(JsonFormat.toJson(IntFields(ulong = Some(uint64max.toLong))) == 
+      assert(JsonFormat.toJson(IntFields(ulong = Some(uint64max.toLong))) ==
         parse(s"""{"ulong":"$uint64max"}""").getOrError)
       assert(JsonFormat.toJson(IntFields(ulong = Some(1))) == parse(s"""{"ulong":"1"}""").getOrError)
-      assert(JsonFormat.toJson(IntFields(fixlong = Some(uint64max.toLong))) == 
+      assert(JsonFormat.toJson(IntFields(fixlong = Some(uint64max.toLong))) ==
         parse(s"""{"fixlong":"$uint64max"}""").getOrError)
       assert(JsonFormat.toJson(IntFields(fixlong = Some(1))) == parse(s"""{"fixlong":"1"}""").getOrError)
     }
-  
+
     "TestProto should parse an enum formatted as number" - {
-      assert(new Parser().fromJsonString[MyTest]("""{"optEnum":1}""") == 
+      assert(new Parser().fromJsonString[MyTest]("""{"optEnum":1}""") ==
         MyTest(optEnum = Some(MyEnum.V1)))
-      assert(new Parser().fromJsonString[MyTest]("""{"optEnum":2}""") == 
+      assert(new Parser().fromJsonString[MyTest]("""{"optEnum":2}""") ==
         MyTest(optEnum = Some(MyEnum.V2)))
     }
-  
+
     "PreservedTestJson should be TestProto when parsed from json" - {
-      assert(new Parser(preservingProtoFieldNames = true).fromJsonString[MyTest](PreservedTestJson) == 
+      assert(new Parser(preservingProtoFieldNames = true).fromJsonString[MyTest](PreservedTestJson) ==
         TestProto)
     }
-  
+
     "DoubleFloatProto should parse NaNs" - {
       val i = s"""{
         "d": "NaN",
@@ -359,7 +359,7 @@ object JsonFormatSpec extends TestSuite {
       assert(JsonFormat.toJson(out).obj.flatMap(_.apply("d")) == Some(Json.jString(Double.NaN.toString)))
       assert(JsonFormat.toJson(out).obj.flatMap(_.apply("f")) == Some(Json.jString(Double.NaN.toString)))
     }
-  
+
     "DoubleFloatProto should parse Infinity" - {
       val i = s"""{
         "d": "Infinity",
@@ -371,7 +371,7 @@ object JsonFormatSpec extends TestSuite {
       assert(JsonFormat.toJson(out).obj.flatMap(_.apply("d")) == Some(Json.jString(Double.PositiveInfinity.toString)))
       assert(JsonFormat.toJson(out).obj.flatMap(_.apply("f")) == Some(Json.jString(Double.PositiveInfinity.toString)))
     }
-  
+
     "DoubleFloatProto should parse -Infinity" - {
       val i = s"""{
         "d": "-Infinity",
@@ -383,29 +383,29 @@ object JsonFormatSpec extends TestSuite {
       assert(JsonFormat.toJson(out).obj.flatMap(_.apply("d")) == Some(Json.jString(Double.NegativeInfinity.toString)))
       assert(JsonFormat.toJson(out).obj.flatMap(_.apply("f")) == Some(Json.jString(Double.NegativeInfinity.toString)))
     }
-  
+
     val anyEnabledTypeRegistry = TypeRegistry.empty.addMessageByCompanion(TestProto.companion)
     val anyEnabledParser = new Parser(typeRegistry = anyEnabledTypeRegistry)
     val anyEnabledPrinter = new Printer(typeRegistry = anyEnabledTypeRegistry)
 
     "TestProto packed as any should give TestJsonWithType after JSON serialization" - {
       val any = PBAny.pack(TestProto)
-  
+
       assert(anyEnabledPrinter.toJson(any) == parse(TestJsonWithType).getOrError)
     }
-  
+
     "TestJsonWithType should be TestProto packed as any when parsed from JSON" - {
       val out = anyEnabledParser.fromJson[PBAny](parse(TestJsonWithType).getOrError)
       assert(out.unpack[MyTest] == TestProto)
     }
-  
+
     "toJsonString should generate correct JSON for messages with custom collection type" - {
       val studio = Studio().addGuitars(Guitar(numberOfStrings = 12))
       val expectedStudioJsonString = """{"guitars":[{"numberOfStrings":12}]}"""
       val studioJsonString = JsonFormat.toJsonString(studio)
       assert(studioJsonString == expectedStudioJsonString)
     }
-  
+
     "fromJsonString should parse JSON correctly to message with custom collection type" - {
       val expectedStudio = Studio().addGuitars(Guitar(numberOfStrings = 12))
       val studioJsonString = """{"guitars":[{"numberOfStrings":12}]}"""
