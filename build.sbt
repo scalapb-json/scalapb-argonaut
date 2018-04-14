@@ -121,7 +121,7 @@ lazy val commonSettings = Seq[Def.SettingsDefinition](
     "io.github.scalapb-json" %%% "scalapb-json-common" % scalapbJsonCommonVersion.value,
     "com.thesamet.scalapb" %% "scalapb-runtime" % scalapbVersion % "protobuf,test",
     "io.argonaut" %%% "argonaut" % argonautVersion.value,
-    "com.lihaoyi" %%% "utest" % "0.6.3" % "test"
+    "com.lihaoyi" %%% "utest" % "0.6.4" % "test"
   ),
   testFrameworks += new TestFramework("utest.runner.Framework"),
   pomExtra in Global := {
