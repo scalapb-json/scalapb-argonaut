@@ -212,7 +212,6 @@ object JsonFormatSpec extends TestSuite {
             |  "stringToBool": {},
             |  "optBs": "",
             |  "optBool": false,
-            |  "trick": 0,
             |  "fixed64ToBytes": {}
             |}""".stripMargin).getOrError
       )
@@ -236,7 +235,6 @@ object JsonFormatSpec extends TestSuite {
             |  "string_to_bool": {},
             |  "opt_bs": "",
             |  "opt_bool": false,
-            |  "trick": 0,
             |  "fixed64_to_bytes": {}
             |}""".stripMargin).getOrError
       )
