@@ -373,10 +373,10 @@ object JsonFormat {
       }
     )
     .registerWriter(
-      (f: FieldMask) => Json.jString(ScalapbJsonCommon.fieldMaskToJsonString(f)), {
+      (f: FieldMask) => Json.jString(scalapb.FieldMaskUtil.toJsonString(f)), {
         _.string match {
           case Some(str) =>
-            ScalapbJsonCommon.fieldMaskFromJsonString(str)
+            scalapb.FieldMaskUtil.fromJsonString(str)
           case _ =>
             throw new JsonFormatException("Expected a string.")
         }
