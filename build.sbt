@@ -115,13 +115,13 @@ lazy val commonSettings = Seq[Def.SettingsDefinition](
   Project.inConfig(Test)(sbtprotoc.ProtocPlugin.protobufConfigSettings),
   PB.targets in Compile := Nil,
   PB.protoSources in Test := Seq(file("shared/src/test/protobuf")),
-  scalapbJsonCommonVersion := "0.3.0-M1",
+  scalapbJsonCommonVersion := "0.3.1",
   argonautVersion := "6.2.2",
   libraryDependencies ++= Seq(
     "io.github.scalapb-json" %%% "scalapb-json-common" % scalapbJsonCommonVersion.value,
     "com.thesamet.scalapb" %% "scalapb-runtime" % scalapbVersion % "protobuf,test",
     "io.argonaut" %%% "argonaut" % argonautVersion.value,
-    "com.lihaoyi" %%% "utest" % "0.6.4" % "test"
+    "com.lihaoyi" %%% "utest" % "0.6.6" % "test"
   ),
   testFrameworks += new TestFramework("utest.runner.Framework"),
   pomExtra in Global := {
