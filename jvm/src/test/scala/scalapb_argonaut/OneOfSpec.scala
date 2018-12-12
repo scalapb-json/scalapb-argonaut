@@ -25,21 +25,25 @@ object OneOfSpec extends TestSuite {
         case (message: OneOf, json: String) =>
           assert(
             new Printer(includingDefaultValueFields = false)
-              .toJson(message) == parse(json).getOrError)
+              .toJson(message) == parse(json).getOrError
+          )
           assert(
             new Printer(includingDefaultValueFields = false).toJson(message) ==
               parse(
                 ProtobufJavaPrinter().print(toJavaProto(message))
-              ).getOrError)
+              ).getOrError
+          )
 
           assert(
             new Printer(includingDefaultValueFields = true)
-              .toJson(message) == parse(json).getOrError)
+              .toJson(message) == parse(json).getOrError
+          )
           assert(
             new Printer(includingDefaultValueFields = true).toJson(message) ==
               parse(
                 ProtobufJavaPrinter().includingDefaultValueFields().print(toJavaProto(message))
-              ).getOrError)
+              ).getOrError
+          )
       }
     }
   }

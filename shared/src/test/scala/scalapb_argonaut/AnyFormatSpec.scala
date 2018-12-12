@@ -24,7 +24,8 @@ object AnyFormatSpec extends TestSuite with JavaAssertions {
     Seq(
       PBAny.pack(AnyTest("1")),
       PBAny.pack(AnyTest("2"))
-    ))
+    )
+  )
 
   val ManyPackedJson = parse("""
       |{

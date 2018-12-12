@@ -111,48 +111,66 @@ object JsonFormatSpec extends TestSuite {
     }
 
     "Zero maps should give correct json" - {
-      assert(JsonFormat.toJson(
-        MyTest(
-          stringToInt32 = Map("" -> 17),
-          intToMytest = Map(0 -> MyTest()),
-          fixed64ToBytes = Map(0L -> com.google.protobuf.ByteString.copyFromUtf8("foobar")))) ==
-        parse("""|{
+      assert(
+        JsonFormat.toJson(
+          MyTest(
+            stringToInt32 = Map("" -> 17),
+            intToMytest = Map(0 -> MyTest()),
+            fixed64ToBytes = Map(0L -> com.google.protobuf.ByteString.copyFromUtf8("foobar"))
+          )
+        ) ==
+          parse("""|{
                    |  "stringToInt32": {"": 17},
                    |  "intToMytest": {"0": {}},
                    |  "fixed64ToBytes": {"0": "Zm9vYmFy"}
-                   |}""".stripMargin).getOrError)
+                   |}""".stripMargin).getOrError
+      )
     }
 
     "Zero maps should give correct json for MyTest3" - {
-      assert(JsonFormat.toJson(
-        MyTest3(
-          stringToInt32 = Map("" -> 17),
-          intToMytest = Map(0 -> MyTest()),
-          fixed64ToBytes = Map(0L -> com.google.protobuf.ByteString.copyFromUtf8("foobar")))) ==
-        parse("""|{
+      assert(
+        JsonFormat.toJson(
+          MyTest3(
+            stringToInt32 = Map("" -> 17),
+            intToMytest = Map(0 -> MyTest()),
+            fixed64ToBytes = Map(0L -> com.google.protobuf.ByteString.copyFromUtf8("foobar"))
+          )
+        ) ==
+          parse("""|{
                    |  "stringToInt32": {"": 17},
                    |  "intToMytest": {"0": {}},
                    |  "fixed64ToBytes": {"0": "Zm9vYmFy"}
-                   |}""".stripMargin).getOrError)
+                   |}""".stripMargin).getOrError
+      )
     }
 
     "Set treat should give correct json" - {
-      assert(JsonFormat.toJson(MyTest(trickOrTreat = MyTest.TrickOrTreat.Treat(MyTest()))) ==
-        parse("""{"treat": {}}""").getOrError)
+      assert(
+        JsonFormat.toJson(MyTest(trickOrTreat = MyTest.TrickOrTreat.Treat(MyTest()))) ==
+          parse("""{"treat": {}}""").getOrError
+      )
     }
 
     "Parse treat should give correct proto with proto2" - {
-      assert(JsonFormat.fromJsonString[MyTest]("""{"treat": {"hello": "x"}}""") ==
-        MyTest(trickOrTreat = MyTest.TrickOrTreat.Treat(MyTest(hello = Some("x")))))
-      assert(JsonFormat.fromJsonString[MyTest]("""{"treat": {}}""") ==
-        MyTest(trickOrTreat = MyTest.TrickOrTreat.Treat(MyTest())))
+      assert(
+        JsonFormat.fromJsonString[MyTest]("""{"treat": {"hello": "x"}}""") ==
+          MyTest(trickOrTreat = MyTest.TrickOrTreat.Treat(MyTest(hello = Some("x"))))
+      )
+      assert(
+        JsonFormat.fromJsonString[MyTest]("""{"treat": {}}""") ==
+          MyTest(trickOrTreat = MyTest.TrickOrTreat.Treat(MyTest()))
+      )
     }
 
     "Parse treat should give correct proto with proto3" - {
-      assert(JsonFormat.fromJsonString[MyTest3]("""{"treat": {"s": "x"}}""") ==
-        MyTest3(trickOrTreat = MyTest3.TrickOrTreat.Treat(MyTest3(s = "x"))))
-      assert(JsonFormat.fromJsonString[MyTest3]("""{"treat": {}}""") ==
-        MyTest3(trickOrTreat = MyTest3.TrickOrTreat.Treat(MyTest3())))
+      assert(
+        JsonFormat.fromJsonString[MyTest3]("""{"treat": {"s": "x"}}""") ==
+          MyTest3(trickOrTreat = MyTest3.TrickOrTreat.Treat(MyTest3(s = "x")))
+      )
+      assert(
+        JsonFormat.fromJsonString[MyTest3]("""{"treat": {}}""") ==
+          MyTest3(trickOrTreat = MyTest3.TrickOrTreat.Treat(MyTest3()))
+      )
     }
 
     "JsonFormat should encode and decode enums for proto3" - {
@@ -161,20 +179,25 @@ object JsonFormatSpec extends TestSuite {
       val defaultValue = MyTest3(optEnum = MyTest3.MyEnum3.UNKNOWN)
       assert(JsonFormat.toJson(defaultValue) == parse("""{}""").getOrError)
       assert(JsonFormat.fromJsonString[MyTest3](JsonFormat.toJsonString(v1Value)) == v1Value)
-      assert(JsonFormat.fromJsonString[MyTest3](JsonFormat.toJsonString(defaultValue)) == defaultValue)
+      assert(
+        JsonFormat.fromJsonString[MyTest3](JsonFormat.toJsonString(defaultValue)) == defaultValue
+      )
     }
 
     "parsing one offs should work correctly for issue 315" - {
-      assert(JsonFormat.fromJsonString[jsontest.issue315.Msg]("""
+      assert(
+        JsonFormat.fromJsonString[jsontest.issue315.Msg]("""
       {
             "baz" : "1",
             "foo" : {
               "cols" : "1"
             }
       }""") ==
-        jsontest.issue315.Msg(
-          baz = "1",
-          someUnion = jsontest.issue315.Msg.SomeUnion.Foo(jsontest.issue315.Foo(cols = "1"))))
+          jsontest.issue315.Msg(
+            baz = "1",
+            someUnion = jsontest.issue315.Msg.SomeUnion.Foo(jsontest.issue315.Foo(cols = "1"))
+          )
+      )
     }
 
     "parsing null should give default value" - {
@@ -196,8 +219,9 @@ object JsonFormatSpec extends TestSuite {
     }
 
     "Empty object should give full json if including default values" - {
-      assert(new Printer(includingDefaultValueFields = true).toJson(MyTest()) ==
-        parse("""{
+      assert(
+        new Printer(includingDefaultValueFields = true).toJson(MyTest()) ==
+          parse("""{
             |  "hello": "",
             |  "foobar": 0,
             |  "bazinga": "0",
@@ -218,9 +242,10 @@ object JsonFormatSpec extends TestSuite {
     }
 
     "Empty object should with preserve field names should work" - {
-      assert(new Printer(includingDefaultValueFields = true, preservingProtoFieldNames = true)
-        .toJson(MyTest()) ==
-        parse("""{
+      assert(
+        new Printer(includingDefaultValueFields = true, preservingProtoFieldNames = true)
+          .toJson(MyTest()) ==
+          parse("""{
             |  "hello": "",
             |  "foobar": 0,
             |  "bazinga": "0",
@@ -245,8 +270,10 @@ object JsonFormatSpec extends TestSuite {
     }
 
     "TestProto should format int64 as JSON number" - {
-      assert(new Printer(formattingLongAsNumber = true).print(MyTest(bazinga = Some(642))) ==
-        """{"bazinga":642}""")
+      assert(
+        new Printer(formattingLongAsNumber = true).print(MyTest(bazinga = Some(642))) ==
+          """{"bazinga":642}"""
+      )
     }
 
     "TestProto should parse numbers formatted as JSON string" - {
@@ -254,18 +281,25 @@ object JsonFormatSpec extends TestSuite {
       def validateAccepts(json: String, expected: IntFields) = {
         assert(parser.fromJsonString[IntFields](json) == expected)
       }
-      def validateRejects(json: String) = try {
-        parser.fromJsonString[IntFields](json)
-        sys.error("fail")
-      } catch {
-        case _: JsonFormatException =>
-      }
+      def validateRejects(json: String) =
+        try {
+          parser.fromJsonString[IntFields](json)
+          sys.error("fail")
+        } catch {
+          case _: JsonFormatException =>
+        }
 
       // int32
       validateAccepts("""{"int":"642"}""", IntFields(int = Some(642)))
       validateAccepts("""{"int":"-1"}""", IntFields(int = Some(-1)))
-      validateAccepts(s"""{"int":"${Integer.MAX_VALUE}"}""", IntFields(int = Some(Integer.MAX_VALUE)))
-      validateAccepts(s"""{"int":"${Integer.MIN_VALUE}"}""", IntFields(int = Some(Integer.MIN_VALUE)))
+      validateAccepts(
+        s"""{"int":"${Integer.MAX_VALUE}"}""",
+        IntFields(int = Some(Integer.MAX_VALUE))
+      )
+      validateAccepts(
+        s"""{"int":"${Integer.MIN_VALUE}"}""",
+        IntFields(int = Some(Integer.MIN_VALUE))
+      )
       validateRejects(s"""{"int":"${Integer.MAX_VALUE.toLong + 1}"}""")
       validateRejects(s"""{"int":"${Integer.MIN_VALUE.toLong - 1}"}""")
 
@@ -292,10 +326,12 @@ object JsonFormatSpec extends TestSuite {
       // sint32
       validateAccepts(
         s"""{"sint":"${Integer.MAX_VALUE}"}""",
-        IntFields(sint = Some(Integer.MAX_VALUE)))
+        IntFields(sint = Some(Integer.MAX_VALUE))
+      )
       validateAccepts(
         s"""{"sint":"${Integer.MIN_VALUE}"}""",
-        IntFields(sint = Some(Integer.MIN_VALUE)))
+        IntFields(sint = Some(Integer.MIN_VALUE))
+      )
       validateRejects(s"""{"sint":"${Integer.MAX_VALUE.toLong + 1}"}""")
       validateRejects(s"""{"sint":"${Integer.MIN_VALUE.toLong - 1}"}""")
 
@@ -319,31 +355,51 @@ object JsonFormatSpec extends TestSuite {
 
     "TestProto should produce valid JSON output for unsigned integers" - {
       val uint32max: Long = (1L << 32) - 1
-      assert(JsonFormat.toJson(IntFields(uint = Some(uint32max.toInt))) ==
-        parse(s"""{"uint":$uint32max}""").getOrError)
+      assert(
+        JsonFormat.toJson(IntFields(uint = Some(uint32max.toInt))) ==
+          parse(s"""{"uint":$uint32max}""").getOrError
+      )
       assert(JsonFormat.toJson(IntFields(uint = Some(1))) == parse(s"""{"uint":1}""").getOrError)
-      assert(JsonFormat.toJson(IntFields(fixint = Some(uint32max.toInt))) ==
-        parse(s"""{"fixint":$uint32max}""").getOrError)
-      assert(JsonFormat.toJson(IntFields(fixint = Some(1))) == parse(s"""{"fixint":1}""").getOrError)
+      assert(
+        JsonFormat.toJson(IntFields(fixint = Some(uint32max.toInt))) ==
+          parse(s"""{"fixint":$uint32max}""").getOrError
+      )
+      assert(
+        JsonFormat.toJson(IntFields(fixint = Some(1))) == parse(s"""{"fixint":1}""").getOrError
+      )
       val uint64max: BigInt = (BigInt(1) << 64) - 1
-      assert(JsonFormat.toJson(IntFields(ulong = Some(uint64max.toLong))) ==
-        parse(s"""{"ulong":"$uint64max"}""").getOrError)
-      assert(JsonFormat.toJson(IntFields(ulong = Some(1))) == parse(s"""{"ulong":"1"}""").getOrError)
-      assert(JsonFormat.toJson(IntFields(fixlong = Some(uint64max.toLong))) ==
-        parse(s"""{"fixlong":"$uint64max"}""").getOrError)
-      assert(JsonFormat.toJson(IntFields(fixlong = Some(1))) == parse(s"""{"fixlong":"1"}""").getOrError)
+      assert(
+        JsonFormat.toJson(IntFields(ulong = Some(uint64max.toLong))) ==
+          parse(s"""{"ulong":"$uint64max"}""").getOrError
+      )
+      assert(
+        JsonFormat.toJson(IntFields(ulong = Some(1))) == parse(s"""{"ulong":"1"}""").getOrError
+      )
+      assert(
+        JsonFormat.toJson(IntFields(fixlong = Some(uint64max.toLong))) ==
+          parse(s"""{"fixlong":"$uint64max"}""").getOrError
+      )
+      assert(
+        JsonFormat.toJson(IntFields(fixlong = Some(1))) == parse(s"""{"fixlong":"1"}""").getOrError
+      )
     }
 
     "TestProto should parse an enum formatted as number" - {
-      assert(new Parser().fromJsonString[MyTest]("""{"optEnum":1}""") ==
-        MyTest(optEnum = Some(MyEnum.V1)))
-      assert(new Parser().fromJsonString[MyTest]("""{"optEnum":2}""") ==
-        MyTest(optEnum = Some(MyEnum.V2)))
+      assert(
+        new Parser().fromJsonString[MyTest]("""{"optEnum":1}""") ==
+          MyTest(optEnum = Some(MyEnum.V1))
+      )
+      assert(
+        new Parser().fromJsonString[MyTest]("""{"optEnum":2}""") ==
+          MyTest(optEnum = Some(MyEnum.V2))
+      )
     }
 
     "PreservedTestJson should be TestProto when parsed from json" - {
-      assert(new Parser(preservingProtoFieldNames = true).fromJsonString[MyTest](PreservedTestJson) ==
-        TestProto)
+      assert(
+        new Parser(preservingProtoFieldNames = true).fromJsonString[MyTest](PreservedTestJson) ==
+          TestProto
+      )
     }
 
     "DoubleFloatProto should parse NaNs" - {
@@ -354,8 +410,12 @@ object JsonFormatSpec extends TestSuite {
       val out = JsonFormat.fromJsonString[DoubleFloat](i)
       assert(out.d.map(_.isNaN) == Some(true))
       assert(out.f.map(_.isNaN) == Some(true))
-      assert(JsonFormat.toJson(out).obj.flatMap(_.apply("d")) == Some(Json.jString(Double.NaN.toString)))
-      assert(JsonFormat.toJson(out).obj.flatMap(_.apply("f")) == Some(Json.jString(Double.NaN.toString)))
+      assert(
+        JsonFormat.toJson(out).obj.flatMap(_.apply("d")) == Some(Json.jString(Double.NaN.toString))
+      )
+      assert(
+        JsonFormat.toJson(out).obj.flatMap(_.apply("f")) == Some(Json.jString(Double.NaN.toString))
+      )
     }
 
     "DoubleFloatProto should parse Infinity" - {
@@ -366,8 +426,16 @@ object JsonFormatSpec extends TestSuite {
       val out = JsonFormat.fromJsonString[DoubleFloat](i)
       assert(out.d.map(_.isPosInfinity) == Some(true))
       assert(out.f.map(_.isPosInfinity) == Some(true))
-      assert(JsonFormat.toJson(out).obj.flatMap(_.apply("d")) == Some(Json.jString(Double.PositiveInfinity.toString)))
-      assert(JsonFormat.toJson(out).obj.flatMap(_.apply("f")) == Some(Json.jString(Double.PositiveInfinity.toString)))
+      assert(
+        JsonFormat.toJson(out).obj.flatMap(_.apply("d")) == Some(
+          Json.jString(Double.PositiveInfinity.toString)
+        )
+      )
+      assert(
+        JsonFormat.toJson(out).obj.flatMap(_.apply("f")) == Some(
+          Json.jString(Double.PositiveInfinity.toString)
+        )
+      )
     }
 
     "DoubleFloatProto should parse -Infinity" - {
@@ -378,8 +446,16 @@ object JsonFormatSpec extends TestSuite {
       val out = JsonFormat.fromJsonString[DoubleFloat](i)
       assert(out.d.map(_.isNegInfinity) == Some(true))
       assert(out.f.map(_.isNegInfinity) == Some(true))
-      assert(JsonFormat.toJson(out).obj.flatMap(_.apply("d")) == Some(Json.jString(Double.NegativeInfinity.toString)))
-      assert(JsonFormat.toJson(out).obj.flatMap(_.apply("f")) == Some(Json.jString(Double.NegativeInfinity.toString)))
+      assert(
+        JsonFormat.toJson(out).obj.flatMap(_.apply("d")) == Some(
+          Json.jString(Double.NegativeInfinity.toString)
+        )
+      )
+      assert(
+        JsonFormat.toJson(out).obj.flatMap(_.apply("f")) == Some(
+          Json.jString(Double.NegativeInfinity.toString)
+        )
+      )
     }
 
     val anyEnabledTypeRegistry = TypeRegistry.empty.addMessageByCompanion(TestProto.companion)
@@ -413,7 +489,10 @@ object JsonFormatSpec extends TestSuite {
 
     "formatEnumAsNumber should format enums as number" - {
       val p = MyTest().update(_.optEnum := MyEnum.V2)
-      assert(new Printer(formattingEnumsAsNumber = true).toJson(p) == parse("""{"optEnum":2}""").getOrError)
+      assert(
+        new Printer(formattingEnumsAsNumber = true)
+          .toJson(p) == parse("""{"optEnum":2}""").getOrError
+      )
     }
 
     "FieldMask" - {

@@ -13,8 +13,10 @@ object StructFormatSpec extends TestSuite with JavaAssertions {
       assert(JsonFormat.fromJsonString[StructTest]("""{"nv": null}""") == StructTest())
       assert(JsonFormat.fromJsonString[StructTest]("""{"nv": "NULL_VALUE"}""") == StructTest())
       assert(JsonFormat.fromJsonString[StructTest]("""{"nv": 0}""") == StructTest())
-      assert(JsonFormat.fromJsonString[StructTest]("""{"repNv": [null, 0, null]}""") ==
-        StructTest(repNv = Seq(NullValue.NULL_VALUE, NullValue.NULL_VALUE, NullValue.NULL_VALUE)))
+      assert(
+        JsonFormat.fromJsonString[StructTest]("""{"repNv": [null, 0, null]}""") ==
+          StructTest(repNv = Seq(NullValue.NULL_VALUE, NullValue.NULL_VALUE, NullValue.NULL_VALUE))
+      )
     }
   }
 }
