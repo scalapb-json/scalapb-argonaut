@@ -15,7 +15,7 @@ val tagOrHash = Def.setting {
   else tagName.value
 }
 
-val unusedWarnings = Seq("-Ywarn-unused", "-Ywarn-unused-import")
+val unusedWarnings = Seq("-Ywarn-unused")
 
 val scalapbArgonaut = crossProject(JVMPlatform, JSPlatform, NativePlatform)
   .in(file("."))
