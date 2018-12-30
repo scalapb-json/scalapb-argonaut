@@ -5,12 +5,13 @@ import sbtrelease.Git
 object UpdateReadme {
 
   val scalapbArgonautName = "scalapb-argonaut"
+  val scalapbArgonautMacrosName = "scalapb-argonaut-macros"
 
   val updateReadmeTask = { state: State =>
     val extracted = Project.extract(state)
     val v = extracted get version
     val org = extracted get organization
-    val modules = scalapbArgonautName :: Nil
+    val modules = scalapbArgonautName :: scalapbArgonautMacrosName :: Nil
     val readme = "README.md"
     val readmeFile = file(readme)
     val newReadme = Predef

@@ -7,6 +7,8 @@ The structure of this project is hugely inspired by [scalapb-json4s](https://git
 
 Include in your `build.sbt` file
 
+### core
+
 ```scala
 libraryDependencies += "io.github.scalapb-json" %% "scalapb-argonaut" % "0.3.0"
 ```
@@ -15,6 +17,12 @@ for scala-js, scala-native
 
 ```scala
 libraryDependencies += "io.github.scalapb-json" %%% "scalapb-argonaut" % "0.3.0"
+```
+
+### macros
+
+```scala
+libraryDependencies += "io.github.scalapb-json" %%% "scalapb-argonaut-macros" % "0.4.0"
 ```
 
 ### for ScalaPB 0.7.x

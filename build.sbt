@@ -17,11 +17,46 @@ val tagOrHash = Def.setting {
 
 val unusedWarnings = Seq("-Ywarn-unused")
 
+lazy val macros = project
+  .in(file("macros"))
+  .settings(
+    commonSettings,
+    name := UpdateReadme.scalapbArgonautMacrosName,
+    libraryDependencies ++= Seq(
+      "io.github.scalapb-json" %%% "scalapb-json-macros" % scalapbJsonCommonVersion.value,
+    ),
+  )
+  .dependsOn(
+    scalapbArgonautJVM,
+  )
+
+lazy val tests = crossProject(JVMPlatform, JSPlatform, NativePlatform)
+  .in(file("tests"))
+  .settings(
+    commonSettings,
+    noPublish,
+    libraryDependencies += "org.scalatest" %%% "scalatest" % "3.1.0-SNAP6" % "test",
+  )
+  .configure(_ dependsOn macros)
+  .nativeSettings(
+    nativeLinkStubs := true,
+    crossScalaVersions := Scala211 :: Nil,
+    scalaVersion := Scala211,
+  )
+  .dependsOn(
+    scalapbArgonaut % "test->test"
+  )
+
+lazy val testsJVM = tests.jvm
+lazy val testsJS = tests.js
+lazy val testsNative = tests.native
+
 val scalapbArgonaut = crossProject(JVMPlatform, JSPlatform, NativePlatform)
   .in(file("core"))
   .enablePlugins(BuildInfoPlugin)
   .settings(
     commonSettings,
+    name := UpdateReadme.scalapbArgonautName,
     mappings in (Compile, packageSrc) ++= (managedSources in Compile).value.map { f =>
       // https://github.com/sbt/sbt-buildinfo/blob/v0.7.0/src/main/scala/sbtbuildinfo/BuildInfoPlugin.scala#L58
       val buildInfoDir = "sbt-buildinfo"
@@ -111,7 +146,6 @@ lazy val commonSettings = Seq[Def.SettingsDefinition](
   description := "Json/Protobuf convertors for ScalaPB",
   licenses += ("MIT", url("https://opensource.org/licenses/MIT")),
   organization := "io.github.scalapb-json",
-  name := UpdateReadme.scalapbArgonautName,
   Project.inConfig(Test)(sbtprotoc.ProtocPlugin.protobufConfigSettings),
   PB.targets in Compile := Nil,
   PB.protoSources in Test := Seq(baseDirectory.value.getParentFile / "shared/src/test/protobuf"),
@@ -201,6 +235,9 @@ val root = project
   )
   .aggregate(
     scalapbArgonautJVM,
-    scalapbArgonautJS
+    scalapbArgonautJS,
+    macros,
+    testsJVM,
+    testsJS,
     // exclude Native on purpose
   )
