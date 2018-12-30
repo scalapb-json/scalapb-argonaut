@@ -18,7 +18,7 @@ val tagOrHash = Def.setting {
 val unusedWarnings = Seq("-Ywarn-unused")
 
 val scalapbArgonaut = crossProject(JVMPlatform, JSPlatform, NativePlatform)
-  .in(file("."))
+  .in(file("core"))
   .enablePlugins(BuildInfoPlugin)
   .settings(
     commonSettings,
@@ -114,7 +114,7 @@ lazy val commonSettings = Seq[Def.SettingsDefinition](
   name := UpdateReadme.scalapbArgonautName,
   Project.inConfig(Test)(sbtprotoc.ProtocPlugin.protobufConfigSettings),
   PB.targets in Compile := Nil,
-  PB.protoSources in Test := Seq(file("shared/src/test/protobuf")),
+  PB.protoSources in Test := Seq(baseDirectory.value.getParentFile / "shared/src/test/protobuf"),
   scalapbJsonCommonVersion := "0.4.0",
   argonautVersion := "6.2.2",
   libraryDependencies ++= Seq(
