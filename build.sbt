@@ -35,7 +35,7 @@ lazy val tests = crossProject(JVMPlatform, JSPlatform, NativePlatform)
   .settings(
     commonSettings,
     noPublish,
-    libraryDependencies += "org.scalatest" %%% "scalatest" % "3.1.0-SNAP6" % "test",
+    libraryDependencies += "org.scalatest" %%% "scalatest" % "3.1.0-SNAP7" % "test",
   )
   .configure(_ dependsOn macros)
   .nativeSettings(
