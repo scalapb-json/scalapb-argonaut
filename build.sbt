@@ -134,7 +134,7 @@ lazy val commonSettings = Seq[Def.SettingsDefinition](
   unmanagedResources in Compile += (baseDirectory in LocalRootProject).value / "LICENSE.txt",
   resolvers += Opts.resolver.sonatypeReleases,
   scalaVersion := Scala211,
-  crossScalaVersions := Seq("2.12.8", Scala211),
+  crossScalaVersions := Seq("2.12.8", Scala211, "2.13.0-M5"),
   scalacOptions ++= PartialFunction
     .condOpt(CrossVersion.partialVersion(scalaVersion.value)) {
       case Some((2, v)) if v >= 11 => unusedWarnings
@@ -149,7 +149,7 @@ lazy val commonSettings = Seq[Def.SettingsDefinition](
   Project.inConfig(Test)(sbtprotoc.ProtocPlugin.protobufConfigSettings),
   PB.targets in Compile := Nil,
   PB.protoSources in Test := Seq(baseDirectory.value.getParentFile / "shared/src/test/protobuf"),
-  scalapbJsonCommonVersion := "0.5.0-M1",
+  scalapbJsonCommonVersion := "0.5.0-M2",
   argonautVersion := "6.2.3",
   libraryDependencies ++= Seq(
     "io.github.scalapb-json" %%% "scalapb-json-common" % scalapbJsonCommonVersion.value,
