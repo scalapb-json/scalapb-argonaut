@@ -502,5 +502,16 @@ object JsonFormatSpec extends TestSuite {
       assert(JsonFormat.toJsonString(message) == json)
       assert(JsonFormat.fromJsonString[TestFieldMask](json) == message)
     }
+
+    "booleans should be accepted as string" - {
+      assert(
+        JsonFormat.fromJsonString[MyTest]("""{"optBool": "true"}""") == MyTest(optBool = Some(true))
+      )
+      assert(
+        JsonFormat.fromJsonString[MyTest]("""{"optBool": "false"}""") == MyTest(
+          optBool = Some(false)
+        )
+      )
+    }
   }
 }

@@ -612,8 +612,17 @@ object JsonFormat {
         )
       case ScalaType.Boolean =>
         value.bool match {
-          case Some(i) => PBoolean(i)
-          case None => onError
+          case Some(i) =>
+            PBoolean(i)
+          case None =>
+            value.string match {
+              case Some("true") =>
+                PBoolean(true)
+              case Some("false") =>
+                PBoolean(false)
+              case _ =>
+                onError
+            }
         }
       case ScalaType.String =>
         value.string match {
