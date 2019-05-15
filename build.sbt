@@ -42,7 +42,7 @@ lazy val tests = crossProject(JVMPlatform, JSPlatform, NativePlatform)
   .settings(
     commonSettings,
     noPublish,
-    libraryDependencies += "org.scalatest" %%% "scalatest" % "3.1.0-SNAP8" % "test",
+    libraryDependencies += "org.scalatest" %%% "scalatest" % "3.1.0-SNAP10" % "test",
   )
   .configure(_ dependsOn macros)
   .nativeSettings(
@@ -141,7 +141,7 @@ lazy val commonSettings = Def.settings(
   unmanagedResources in Compile += (baseDirectory in LocalRootProject).value / "LICENSE.txt",
   resolvers += Opts.resolver.sonatypeReleases,
   scalaVersion := Scala211,
-  crossScalaVersions := Seq("2.12.8", Scala211, "2.13.0-M5"),
+  crossScalaVersions := Seq("2.12.8", Scala211, "2.13.0-RC1"),
   scalacOptions ++= unusedWarnings.value,
   Seq(Compile, Test).flatMap(c => scalacOptions in (c, console) --= unusedWarnings.value),
   scalacOptions ++= Seq("-feature", "-deprecation", "-language:existentials"),
@@ -151,13 +151,13 @@ lazy val commonSettings = Def.settings(
   Project.inConfig(Test)(sbtprotoc.ProtocPlugin.protobufConfigSettings),
   PB.targets in Compile := Nil,
   PB.protoSources in Test := Seq(baseDirectory.value.getParentFile / "shared/src/test/protobuf"),
-  scalapbJsonCommonVersion := "0.5.0-M3",
+  scalapbJsonCommonVersion := "0.5.0-M4",
   argonautVersion := "6.2.3",
   libraryDependencies ++= Seq(
     "io.github.scalapb-json" %%% "scalapb-json-common" % scalapbJsonCommonVersion.value,
     "com.thesamet.scalapb" %% "scalapb-runtime" % scalapbVersion % "protobuf,test",
     "io.argonaut" %%% "argonaut" % argonautVersion.value,
-    "com.lihaoyi" %%% "utest" % "0.6.6" % "test"
+    "com.lihaoyi" %%% "utest" % "0.6.7" % "test"
   ),
   testFrameworks += new TestFramework("utest.runner.Framework"),
   pomExtra in Global := {
