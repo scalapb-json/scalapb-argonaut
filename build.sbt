@@ -137,7 +137,7 @@ val noPublish = Seq(
 
 noPublish
 
-lazy val commonSettings = Seq[Def.SettingsDefinition](
+lazy val commonSettings = Def.settings(
   unmanagedResources in Compile += (baseDirectory in LocalRootProject).value / "LICENSE.txt",
   resolvers += Opts.resolver.sonatypeReleases,
   scalaVersion := Scala211,
@@ -219,7 +219,7 @@ lazy val commonSettings = Seq[Def.SettingsDefinition](
     UpdateReadme.updateReadmeProcess,
     pushChanges
   )
-).flatMap(_.settings)
+)
 
 val scalapbArgonautJVM = scalapbArgonaut.jvm
 val scalapbArgonautJS = scalapbArgonaut.js
