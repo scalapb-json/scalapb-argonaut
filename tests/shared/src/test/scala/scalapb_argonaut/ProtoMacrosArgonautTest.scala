@@ -1,6 +1,6 @@
 package scalapb_json
 
-import org.scalatest.FunSpec
+import org.scalatest.funspec.AnyFunSpec
 import org.scalatest.Matchers
 import scalapb_argonaut.ProtoMacrosArgonaut._
 import com.google.protobuf.struct._
@@ -8,7 +8,7 @@ import jsontest.test.MyTest
 
 import scala.util.Success
 
-class ProtoMacrosArgonautTest extends FunSpec with Matchers {
+class ProtoMacrosArgonautTest extends AnyFunSpec with Matchers {
   describe("ProtoMacrosArgonaut") {
     it("struct") {
       assert(struct"{}" == Struct.defaultInstance)
