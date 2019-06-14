@@ -6,6 +6,15 @@ val Scala211 = "2.11.12"
 val argonautVersion = settingKey[String]("")
 val scalapbJsonCommonVersion = settingKey[String]("")
 
+val utestVersion = Def.setting {
+  CrossVersion.partialVersion(scalaVersion.value) match {
+    case Some((2, v)) if v <= 11 =>
+      "0.6.8"
+    case _ =>
+      "0.6.9"
+  }
+}
+
 val tagName = Def.setting {
   s"v${if (releaseUseGlobalVersion.value) (version in ThisBuild).value else version.value}"
 }
@@ -42,7 +51,7 @@ lazy val tests = crossProject(JVMPlatform, JSPlatform, NativePlatform)
   .settings(
     commonSettings,
     noPublish,
-    libraryDependencies += "org.scalatest" %%% "scalatest" % "3.1.0-SNAP10" % "test",
+    libraryDependencies += "org.scalatest" %%% "scalatest" % "3.1.0-SNAP13" % "test",
   )
   .configure(_ dependsOn macros)
   .nativeSettings(
@@ -142,7 +151,7 @@ lazy val commonSettings = Def.settings(
   unmanagedResources in Compile += (baseDirectory in LocalRootProject).value / "LICENSE.txt",
   resolvers += Opts.resolver.sonatypeReleases,
   scalaVersion := Scala211,
-  crossScalaVersions := Seq("2.12.8", Scala211, "2.13.0-RC1"),
+  crossScalaVersions := Seq("2.12.8", Scala211, "2.13.0"),
   scalacOptions ++= unusedWarnings.value,
   Seq(Compile, Test).flatMap(c => scalacOptions in (c, console) --= unusedWarnings.value),
   scalacOptions ++= Seq("-feature", "-deprecation", "-language:existentials"),
@@ -151,15 +160,19 @@ lazy val commonSettings = Def.settings(
   organization := "io.github.scalapb-json",
   Project.inConfig(Test)(sbtprotoc.ProtocPlugin.protobufConfigSettings),
   PB.targets in Compile := Nil,
+  // Can't use -v380
+  // https://github.com/scalapb/ScalaPB/commit/ff99b075625fe684ce2eef7686d587fdbbf19b62
+  // https://github.com/scalapb/ScalaPB/commit/d3cc69515ea90f1af7eaf2732d22facb6c9e95e3
+  PB.protocVersion := "-v371",
   PB.protoSources in Test := Seq(baseDirectory.value.getParentFile / "shared/src/test/protobuf"),
-  scalapbJsonCommonVersion := "0.5.0-M5",
+  scalapbJsonCommonVersion := "0.5.0-M6",
   argonautVersion := "6.2.3",
   libraryDependencies ++= Seq(
     "com.github.scalaprops" %%% "scalaprops" % "0.6.0" % "test",
     "io.github.scalapb-json" %%% "scalapb-json-common" % scalapbJsonCommonVersion.value,
     "com.thesamet.scalapb" %% "scalapb-runtime" % scalapbVersion % "protobuf,test",
     "io.argonaut" %%% "argonaut" % argonautVersion.value,
-    "com.lihaoyi" %%% "utest" % "0.6.7" % "test"
+    "com.lihaoyi" %%% "utest" % utestVersion.value % "test"
   ),
   testFrameworks += new TestFramework("utest.runner.Framework"),
   pomExtra in Global := {
