@@ -97,6 +97,7 @@ val scalapbArgonaut = crossProject(JVMPlatform, JSPlatform, NativePlatform)
     )
   )
   .jvmSettings(
+    fork in Test := true,
     PB.targets in Test := Seq(
       PB.gens.java -> (sourceManaged in Test).value,
       scalapb.gen(javaConversions = true) -> (sourceManaged in Test).value
