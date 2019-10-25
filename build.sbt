@@ -51,7 +51,7 @@ lazy val tests = crossProject(JVMPlatform, JSPlatform, NativePlatform)
   .settings(
     commonSettings,
     noPublish,
-    libraryDependencies += "org.scalatest" %%% "scalatest" % "3.1.0-SNAP13" % "test",
+    libraryDependencies += "org.scalatest" %%% "scalatest" % "3.1.0-RC3" % "test",
   )
   .configure(_ dependsOn macros)
   .nativeSettings(
@@ -167,7 +167,7 @@ lazy val commonSettings = Def.settings(
   scalapbJsonCommonVersion := "0.5.3",
   argonautVersion := "6.2.3",
   libraryDependencies ++= Seq(
-    "com.github.scalaprops" %%% "scalaprops" % "0.6.1" % "test",
+    "com.github.scalaprops" %%% "scalaprops" % "0.6.2" % "test",
     "io.github.scalapb-json" %%% "scalapb-json-common" % scalapbJsonCommonVersion.value,
     "com.thesamet.scalapb" %% "scalapb-runtime" % scalapbVersion % "protobuf,test",
     "io.argonaut" %%% "argonaut" % argonautVersion.value,
