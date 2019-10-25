@@ -1,7 +1,7 @@
 package scalapb_json
 
 import org.scalatest.funspec.AnyFunSpec
-import org.scalatest.Matchers
+import org.scalatest.matchers.should.Matchers
 import scalapb_argonaut.ProtoMacrosArgonaut._
 import com.google.protobuf.struct._
 import jsontest.test.MyTest
