@@ -6,8 +6,9 @@ import com.google.protobuf.util.{JsonFormat => JavaJsonFormat}
 import com.google.protobuf.any.{Any => PBAny}
 import com.google.protobuf.util.JsonFormat.{TypeRegistry => JavaTypeRegistry}
 import scalapb_json._
+import java.math.BigInteger
 
-object JsonFormatSpecJVM extends TestSuite {
+object JsonFormatSpecJVM extends TestSuite with JsonFormatSpecBase {
 
   val TestProto = MyTest().update(
     _.hello := "Foo",
@@ -49,6 +50,52 @@ object JsonFormatSpecJVM extends TestSuite {
       val javaAny = com.google.protobuf.Any.pack(MyTest.toJavaProto(TestProto))
       val javaJson = anyEnabledJavaPrinter.print(javaAny)
       assert(anyEnabledParser.fromJsonString[PBAny](javaJson).unpack[MyTest] == TestProto)
+    }
+
+    "booleans should be accepted as string" - {
+      assert(
+        JsonFormat.fromJsonString[MyTest]("""{"optBool": "true"}""") ==
+          MyTest(optBool = Some(true))
+      )
+      assert(
+        JsonFormat.fromJsonString[MyTest]("""{"optBool": "false"}""") ==
+          MyTest(optBool = Some(false))
+      )
+    }
+
+    "unknown fields should get rejected" - new DefaultParserContext {
+      assertFails("""{"random_field_123": 3}""", MyTest)
+      // There is special for @type field for anys, lets make sure they get rejected too
+      assertFails("""{"@type": "foo"}""", MyTest)
+    }
+
+    "unknown fields should not get rejected when ignoreUnknownFields is set" - new IgnoringUnknownParserContext {
+      assertParse("""{"random_field_123": 3}""", MyTest())
+      // There is special for @type field for anys, lets make sure they get rejected too
+      assertParse("""{"@type": "foo"}""", MyTest())
+    }
+
+    "parser should reject out of range numeric values" - {
+      val maxLong = new BigInteger(String.valueOf(Long.MaxValue))
+      val minLong = new BigInteger(String.valueOf(Long.MinValue))
+      assertAcceptsNoQuotes("optionalInt64", maxLong.toString)
+      assertAcceptsNoQuotes("optionalInt64", minLong.toString)
+
+      val moreThanOne = new java.math.BigDecimal("1.000001")
+      val maxDouble = new java.math.BigDecimal(Double.MaxValue)
+      val minDouble = new java.math.BigDecimal(-Double.MaxValue)
+      assertAccepts("optionalDouble", minDouble.toString)
+      assertRejects("optionalDouble", maxDouble.multiply(moreThanOne).toString)
+      assertRejects("optionalDouble", minDouble.multiply(moreThanOne).toString)
+    }
+
+    "floats should not lose precision" - {
+      val obj = TestAllTypes(optionalFloat = Some(0.41804487f))
+      val javaJson = JavaJsonFormat.printer().print(TestAllTypes.toJavaProto(obj))
+      val scalaJson = JsonFormat.toJson(obj)
+      println((scalaJson, javaJson))
+      assert(Right(scalaJson) == argonaut.JsonParser.parse(javaJson))
+      assert(JsonFormat.parser.fromJsonString[TestAllTypes](javaJson) == obj)
     }
   }
 

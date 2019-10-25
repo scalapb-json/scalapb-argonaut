@@ -86,6 +86,10 @@ object PrimitiveWrappersSpec extends TestSuite {
           Wrapper(wDouble = Some(3.1))
       )
       assert(
+        JsonFormat.fromJson[Wrapper](render(Map("wDouble" -> Json.jString("3.1")))) ==
+          Wrapper(wDouble = Some(3.1))
+      )
+      assert(
         JsonFormat.fromJson[Wrapper](render(Map("wFloat" -> Json.jNumber(3.0)))) ==
           Wrapper(wFloat = Some(3.0f))
       )

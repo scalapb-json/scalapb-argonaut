@@ -4,7 +4,8 @@ import EitherOps._
 import argonaut.JsonParser.parse
 import com.google.protobuf.util.JsonFormat.{printer => ProtobufJavaPrinter}
 import jsontest.oneof.OneOf._
-import jsontest.oneof.{OneOf, OneOfMessage}
+import jsontest.oneof.Pair.ValueByType._
+import jsontest.oneof.{Dictionary, OneOf, OneOfMessage, Pair}
 import utest._
 
 object OneOfSpec extends TestSuite {
@@ -24,27 +25,39 @@ object OneOfSpec extends TestSuite {
       examples.foreach {
         case (message: OneOf, json: String) =>
           assert(
-            new Printer(includingDefaultValueFields = false)
-              .toJson(message) == parse(json).getOrError
+            new Printer().toJson(message) == parse(json).getOrError
           )
           assert(
-            new Printer(includingDefaultValueFields = false).toJson(message) ==
+            new Printer().toJson(message) ==
               parse(
                 ProtobufJavaPrinter().print(toJavaProto(message))
               ).getOrError
           )
 
           assert(
-            new Printer(includingDefaultValueFields = true)
-              .toJson(message) == parse(json).getOrError
+            new Printer().includingDefaultValueFields.toJson(message) == parse(json).getOrError
           )
           assert(
-            new Printer(includingDefaultValueFields = true).toJson(message) ==
+            new Printer().includingDefaultValueFields.toJson(message) ==
               parse(
                 ProtobufJavaPrinter().includingDefaultValueFields().print(toJavaProto(message))
               ).getOrError
           )
       }
+    }
+
+    "dictionary test should preserve zero values in one of" - {
+      val message = Dictionary(Seq(Pair("myKey", Uint32Value(0))))
+
+      assert(
+        new Printer().toJson(message) ==
+          parse("""{"pairs":[{"key": "myKey", "uint32Value": 0}]}""").getOrError
+      )
+
+      assert(
+        new Printer().includingDefaultValueFields.toJson(message) ==
+          parse("""{"pairs":[{"key": "myKey", "uint32Value": 0}]}""").getOrError
+      )
     }
   }
 

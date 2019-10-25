@@ -11,7 +11,7 @@ import jsontest.custom_collection.{Guitar, Studio}
 import scalapb_json._
 import EitherOps._
 
-object JsonFormatSpec extends TestSuite {
+object JsonFormatSpec extends TestSuite with JsonFormatSpecBase {
 
   val TestProto = MyTest().update(
     _.hello := "Foo",
@@ -395,66 +395,102 @@ object JsonFormatSpec extends TestSuite {
       )
     }
 
+    "TestProto should parse original field names" - {
+      assert(
+        new Parser().fromJsonString[MyTest]("""{"opt_enum":1}""") ==
+          MyTest(optEnum = Some(MyEnum.V1))
+      )
+      assert(
+        new Parser().fromJsonString[MyTest]("""{"opt_enum":2}""") ==
+          MyTest(optEnum = Some(MyEnum.V2))
+      )
+    }
+
     "PreservedTestJson should be TestProto when parsed from json" - {
       assert(
-        new Parser(preservingProtoFieldNames = true).fromJsonString[MyTest](PreservedTestJson) ==
+        new Parser().fromJsonString[MyTest](PreservedTestJson) ==
           TestProto
       )
     }
 
-    "DoubleFloatProto should parse NaNs" - {
+    "TestAllTypesProto should parse NaNs" - {
       val i = s"""{
-        "d": "NaN",
-        "f": "NaN"
+        "optionalDouble": "NaN",
+        "optionalFloat": "NaN"
       }"""
-      val out = JsonFormat.fromJsonString[DoubleFloat](i)
-      assert(out.d.map(_.isNaN) == Some(true))
-      assert(out.f.map(_.isNaN) == Some(true))
+      val out = JsonFormat.fromJsonString[TestAllTypes](i)
+      assert(out.optionalDouble.map(_.isNaN) == Some(true))
+      assert(out.optionalFloat.map(_.isNaN) == Some(true))
+
+      val d = JsonFormat.toJson(out).obj.flatMap(_ apply "optionalDouble")
+      assert(d == Some(Json.jString("NaN")))
+      assert(d.flatMap(_.number) == None) // argonaut does not support "NaN" to `Double`
+
+      val f = JsonFormat.toJson(out).obj.flatMap(_ apply "optionalFloat")
+      assert(f == Some(Json.jString("NaN")))
+      assert(f.flatMap(_.number) == None) // argonaut does not support "NaN" to `Float`
+    }
+
+    "TestAllTypesProto should parse Infinity" - {
+      val i = s"""{
+        "optionalDouble": "Infinity",
+        "optionalFloat": "Infinity"
+      }"""
+      val out = JsonFormat.fromJsonString[TestAllTypes](i)
+      assert(out.optionalDouble.map(_.isPosInfinity) == Some(true))
+      assert(out.optionalFloat.map(_.isPosInfinity) == Some(true))
       assert(
-        JsonFormat.toJson(out).obj.flatMap(_.apply("d")) == Some(Json.jString(Double.NaN.toString))
+        JsonFormat.toJson(out).obj.flatMap(_ apply "optionalDouble") ==
+          Some(Json.jString(Double.PositiveInfinity.toString))
       )
       assert(
-        JsonFormat.toJson(out).obj.flatMap(_.apply("f")) == Some(Json.jString(Double.NaN.toString))
+        JsonFormat.toJson(out).obj.flatMap(_ apply "optionalFloat") ==
+          Some(Json.jString(Double.PositiveInfinity.toString))
       )
     }
 
-    "DoubleFloatProto should parse Infinity" - {
+    "TestAllTypesProto should parse -Infinity" - {
       val i = s"""{
-        "d": "Infinity",
-        "f": "Infinity"
+        "optionalDouble": "-Infinity",
+        "optionalFloat": "-Infinity"
       }"""
-      val out = JsonFormat.fromJsonString[DoubleFloat](i)
-      assert(out.d.map(_.isPosInfinity) == Some(true))
-      assert(out.f.map(_.isPosInfinity) == Some(true))
+      val out = JsonFormat.fromJsonString[TestAllTypes](i)
+      assert(out.optionalDouble.map(_.isNegInfinity) == Some(true))
+      assert(out.optionalFloat.map(_.isNegInfinity) == Some(true))
       assert(
-        JsonFormat.toJson(out).obj.flatMap(_.apply("d")) == Some(
-          Json.jString(Double.PositiveInfinity.toString)
-        )
+        JsonFormat.toJson(out).obj.flatMap(_ apply "optionalDouble") ==
+          Some(Json.jString(Double.NegativeInfinity.toString))
       )
       assert(
-        JsonFormat.toJson(out).obj.flatMap(_.apply("f")) == Some(
-          Json.jString(Double.PositiveInfinity.toString)
-        )
+        JsonFormat.toJson(out).obj.flatMap(_ apply "optionalFloat") ==
+          Some(Json.jString(Double.NegativeInfinity.toString))
       )
     }
 
-    "DoubleFloatProto should parse -Infinity" - {
+    "TestAllTypesProto should take strings" - {
       val i = s"""{
-        "d": "-Infinity",
-        "f": "-Infinity"
+        "optionalDouble": "1.4",
+        "optionalFloat": "1.4"
       }"""
-      val out = JsonFormat.fromJsonString[DoubleFloat](i)
-      assert(out.d.map(_.isNegInfinity) == Some(true))
-      assert(out.f.map(_.isNegInfinity) == Some(true))
+      val out = JsonFormat.fromJsonString[TestAllTypes](i)
+
       assert(
-        JsonFormat.toJson(out).obj.flatMap(_.apply("d")) == Some(
-          Json.jString(Double.NegativeInfinity.toString)
-        )
+        JsonFormat
+          .toJson(out)
+          .obj
+          .flatMap(_ apply "optionalDouble")
+          .flatMap(_.number)
+          .flatMap(_.toDouble)
+          == Some(1.4)
       )
+      val f = JsonFormat
+        .toJson(out)
+        .obj
+        .flatMap(_ apply "optionalFloat")
+        .flatMap(_.number)
+        .map(_.truncateToFloat)
       assert(
-        JsonFormat.toJson(out).obj.flatMap(_.apply("f")) == Some(
-          Json.jString(Double.NegativeInfinity.toString)
-        )
+        f.map(_ - 1.4 <= 0.001) == Some(true)
       )
     }
 
@@ -493,6 +529,13 @@ object JsonFormatSpec extends TestSuite {
         new Printer(formattingEnumsAsNumber = true)
           .toJson(p) == parse("""{"optEnum":2}""").getOrError
       )
+    }
+
+    "unknown fields should not get rejected when ignoreUnknownFields is set" - {
+      val parser = new Parser().ignoringUnknownFields
+      parser.fromJsonString[MyTest]("""{"random_field_123": 3}""")
+      // There is special for @type field for anys, lets make sure they get rejected too
+      parser.fromJsonString[MyTest]("""{"@type": "foo"}""")
     }
 
     "FieldMask" - {
