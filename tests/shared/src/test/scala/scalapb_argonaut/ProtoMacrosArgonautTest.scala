@@ -1,4 +1,4 @@
-package scalapb_json
+package scalapb_argonaut
 
 import org.scalatest.funspec.AnyFunSpec
 import org.scalatest.matchers.should.Matchers
