@@ -46,7 +46,7 @@ lazy val macros = project
     scalapbArgonautJVM,
   )
 
-lazy val tests = crossProject(JVMPlatform, JSPlatform, NativePlatform)
+lazy val tests = crossProject(JVMPlatform, JSPlatform)
   .in(file("tests"))
   .settings(
     commonSettings,
@@ -54,20 +54,14 @@ lazy val tests = crossProject(JVMPlatform, JSPlatform, NativePlatform)
     libraryDependencies += "org.scalatest" %%% "scalatest" % "3.1.0-RC3" % "test",
   )
   .configure(_ dependsOn macros)
-  .nativeSettings(
-    nativeLinkStubs := true,
-    crossScalaVersions := Scala211 :: Nil,
-    scalaVersion := Scala211,
-  )
   .dependsOn(
     scalapbArgonaut % "test->test"
   )
 
 lazy val testsJVM = tests.jvm
 lazy val testsJS = tests.js
-lazy val testsNative = tests.native
 
-val scalapbArgonaut = crossProject(JVMPlatform, JSPlatform, NativePlatform)
+val scalapbArgonaut = crossProject(JVMPlatform, JSPlatform)
   .in(file("core"))
   .enablePlugins(BuildInfoPlugin)
   .settings(
@@ -106,10 +100,6 @@ val scalapbArgonaut = crossProject(JVMPlatform, JSPlatform, NativePlatform)
       "com.google.protobuf" % "protobuf-java" % protobufVersion % "protobuf"
     )
   )
-  .nativeSettings(
-    crossScalaVersions := Scala211 :: Nil,
-    nativeLinkStubs := true
-  )
   .jsSettings(
     buildInfoKeys ++= Seq[BuildInfoKey](
       "scalajsVersion" -> scalaJSVersion
@@ -118,20 +108,18 @@ val scalapbArgonaut = crossProject(JVMPlatform, JSPlatform, NativePlatform)
       val a = (baseDirectory in LocalRootProject).value.toURI.toString
       val g = "https://raw.githubusercontent.com/scalapb-json/scalapb-argonaut/" + tagOrHash.value
       s"-P:scalajs:mapSourceURI:$a->$g/"
-    }
+    },
+    PB.targets in Test := Seq(
+      scalapb.gen(javaConversions = false) -> (sourceManaged in Test).value
+    )
   )
-  .platformsSettings(JVMPlatform, JSPlatform)(
+  .settings(
     Seq((Compile, "main"), (Test, "test")).map {
       case (x, y) =>
         unmanagedSourceDirectories in x += {
           baseDirectory.value.getParentFile / s"jvm_js/src/${y}/scala/"
         }
     }
-  )
-  .platformsSettings(JSPlatform, NativePlatform)(
-    PB.targets in Test := Seq(
-      scalapb.gen(javaConversions = false) -> (sourceManaged in Test).value
-    )
   )
 
 commonSettings
@@ -221,7 +209,6 @@ lazy val commonSettings = Def.settings(
       },
       enableCrossBuild = true
     ),
-    releaseStepCommandAndRemaining(s"; ++ ${Scala211}! ; scalapbArgonautNative/publishSigned"),
     releaseStepCommand("sonatypeBundleRelease"),
     setNextVersion,
     commitNextVersion,
@@ -232,23 +219,10 @@ lazy val commonSettings = Def.settings(
 
 val scalapbArgonautJVM = scalapbArgonaut.jvm
 val scalapbArgonautJS = scalapbArgonaut.js
-val scalapbArgonautNative = scalapbArgonaut.native
 
-val root = project
-  .in(file("."))
-  .settings(
-    commonSettings,
-    publishArtifact := false,
-    publish := {},
-    publishLocal := {},
-    PgpKeys.publishSigned := {},
-    PgpKeys.publishLocalSigned := {}
-  )
-  .aggregate(
-    scalapbArgonautJVM,
-    scalapbArgonautJS,
-    macros,
-    testsJVM,
-    testsJS,
-    // exclude Native on purpose
-  )
+commonSettings
+publishArtifact := false
+publish := {}
+publishLocal := {}
+PgpKeys.publishSigned := {}
+PgpKeys.publishLocalSigned := {}
