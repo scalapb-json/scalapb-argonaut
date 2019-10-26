@@ -25,10 +25,6 @@ libraryDependencies += "io.github.scalapb-json" %%% "scalapb-argonaut" % "0.6.0-
 libraryDependencies += "io.github.scalapb-json" %%% "scalapb-argonaut-macros" % "0.6.0-M1"
 ```
 
-### for ScalaPB 0.7.x
-
-see https://github.com/scalapb-json/scalapb-argonaut/tree/0.2.x
-
 ## Usage
 
 There are four functions you can use directly to serialize/deserialize your messages:
