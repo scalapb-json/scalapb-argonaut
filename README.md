@@ -13,7 +13,7 @@ Include in your `build.sbt` file
 libraryDependencies += "io.github.scalapb-json" %% "scalapb-argonaut" % "0.6.0-M1"
 ```
 
-for scala-js, scala-native
+for scala-js
 
 ```scala
 libraryDependencies += "io.github.scalapb-json" %%% "scalapb-argonaut" % "0.6.0-M1"
