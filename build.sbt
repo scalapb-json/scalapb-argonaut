@@ -113,14 +113,6 @@ val scalapbArgonaut = crossProject(JVMPlatform, JSPlatform)
       scalapb.gen(javaConversions = false) -> (sourceManaged in Test).value
     )
   )
-  .settings(
-    Seq((Compile, "main"), (Test, "test")).map {
-      case (x, y) =>
-        unmanagedSourceDirectories in x += {
-          baseDirectory.value.getParentFile / s"jvm_js/src/${y}/scala/"
-        }
-    }
-  )
 
 commonSettings
 
