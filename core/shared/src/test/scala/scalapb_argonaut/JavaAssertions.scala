@@ -13,5 +13,4 @@ trait JavaAssertions extends JavaAssertionsPlatform { self: utest.TestSuite =>
   )
   val ScalaJsonParser = new Parser(typeRegistry = ScalaTypeRegistry)
   val ScalaJsonPrinter = new Printer(typeRegistry = ScalaTypeRegistry)
-
 }

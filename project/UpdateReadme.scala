@@ -3,7 +3,6 @@ import sbtrelease.ReleasePlugin.autoImport.ReleaseStep
 import sbtrelease.Git
 
 object UpdateReadme {
-
   val scalapbArgonautName = "scalapb-argonaut"
   val scalapbArgonautMacrosName = "scalapb-argonaut-macros"
 

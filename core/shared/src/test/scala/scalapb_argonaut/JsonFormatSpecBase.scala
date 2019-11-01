@@ -44,5 +44,4 @@ trait JsonFormatSpecBase extends JavaAssertions { self: TestSuite =>
     assertRejectsNoQuotes(field, value)
     assertRejectsQuotes(field, value)
   }
-
 }

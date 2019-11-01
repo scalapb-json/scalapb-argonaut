@@ -7,7 +7,6 @@ import utest._
 import EitherOps._
 
 object WellKnownTypesSpec extends TestSuite {
-
   val durationProto = WellKnownTest(duration = Some(Duration(146, 3455)))
 
   override val tests = Tests {

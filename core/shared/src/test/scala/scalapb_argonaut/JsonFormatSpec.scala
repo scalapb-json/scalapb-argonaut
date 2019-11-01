@@ -12,7 +12,6 @@ import scalapb_json._
 import EitherOps._
 
 object JsonFormatSpec extends TestSuite with JsonFormatSpecBase {
-
   val TestProto = MyTest().update(
     _.hello := "Foo",
     _.foobar := 37,
@@ -350,7 +349,6 @@ object JsonFormatSpec extends TestSuite with JsonFormatSpecBase {
       validateAccepts(s"""{"fixlong":"$uint64max"}""", IntFields(fixlong = Some(uint64max.toLong)))
       validateRejects(s"""{"fixlong":"${uint64max + 1}"}""")
       validateRejects("""{"fixlong":"-1"}""")
-
     }
 
     "TestProto should produce valid JSON output for unsigned integers" - {

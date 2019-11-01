@@ -7,7 +7,6 @@ import language.experimental.macros
 import scala.util.Try
 
 object ProtoMacrosArgonaut {
-
   implicit class ProtoContextArgonaut(private val c: StringContext) extends AnyVal {
     def struct(): com.google.protobuf.struct.Struct =
       macro ProtoMacrosArgonaut.protoStructInterpolation
@@ -40,7 +39,6 @@ object ProtoMacrosArgonaut {
 
 class ProtoMacrosArgonaut(override val c: blackbox.Context)
   extends scalapb_json.ProtoMacrosCommon(c) {
-
   import c.universe._
 
   override def fromJsonImpl[A: c.WeakTypeTag](json: c.Tree): c.Tree = {

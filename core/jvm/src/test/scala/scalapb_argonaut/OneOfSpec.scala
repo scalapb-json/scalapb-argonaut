@@ -60,5 +60,4 @@ object OneOfSpec extends TestSuite {
       )
     }
   }
-
 }

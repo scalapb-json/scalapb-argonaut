@@ -6,7 +6,6 @@ import jsontest.test3.MyTest3.MyEnum3
 import utest._
 
 object EnumFormatSpec extends TestSuite with JavaAssertions {
-
   override val tests = Tests {
     // not ignoring unknown fields:
 

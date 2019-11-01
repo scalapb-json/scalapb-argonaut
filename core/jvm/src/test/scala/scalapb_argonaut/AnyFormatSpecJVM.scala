@@ -5,7 +5,6 @@ import utest._
 import jsontest.anytests.AnyTest
 
 object AnyFormatSpecJVM extends TestSuite with JavaAssertions {
-
   override def registeredCompanions = Seq(AnyTest)
 
   override val tests = Tests {

@@ -6,12 +6,10 @@ import argonaut._
 import utest._
 
 object PrimitiveWrappersSpec extends TestSuite {
-
   private[this] def render[A](a: A)(implicit A: EncodeJson[A]): Json =
     A.apply(a)
 
   override val tests = Tests {
-
     "Empty object should give empty json for Wrapper" - {
       assert(JsonFormat.toJson(Wrapper()) == render(Map.empty[String, Json]))
     }
@@ -131,5 +129,4 @@ object PrimitiveWrappersSpec extends TestSuite {
       )
     }
   }
-
 }

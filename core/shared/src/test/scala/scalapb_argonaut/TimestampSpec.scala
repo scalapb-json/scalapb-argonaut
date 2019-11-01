@@ -7,7 +7,6 @@ import utest._
 import EitherOps._
 
 object TimestampSpec extends TestSuite {
-
   override val tests = Tests {
     "timestamp should serialize and parse correctly" - {
       val timestampJson =

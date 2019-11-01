@@ -9,7 +9,6 @@ import scalapb_json._
 import java.math.BigInteger
 
 object JsonFormatSpecJVM extends TestSuite with JsonFormatSpecBase {
-
   val TestProto = MyTest().update(
     _.hello := "Foo",
     _.foobar := 37,
@@ -27,7 +26,6 @@ object JsonFormatSpecJVM extends TestSuite with JsonFormatSpecBase {
   )
 
   override val tests = Tests {
-
     "fromJsonString should read json produced by Java" - {
       val javaJson = JavaJsonFormat.printer().print(MyTest.toJavaProto(TestProto))
       assert(JsonFormat.fromJsonString[MyTest](javaJson) == TestProto)
@@ -98,5 +96,4 @@ object JsonFormatSpecJVM extends TestSuite with JsonFormatSpecBase {
       assert(JsonFormat.parser.fromJsonString[TestAllTypes](javaJson) == obj)
     }
   }
-
 }

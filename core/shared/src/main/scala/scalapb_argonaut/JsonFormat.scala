@@ -24,7 +24,6 @@ case class FormatRegistry(
   enumFormatters: Map[EnumDescriptor, EnumFormatter[EnumValueDescriptor]] = Map.empty,
   registeredCompanions: Seq[GenericCompanion] = Seq.empty
 ) {
-
   def registerMessageFormatter[T <: GeneratedMessage](
     writer: (Printer, T) => Json,
     parser: (Parser, Json) => T
@@ -370,7 +369,6 @@ class Parser(config: Parser.ParserConfig) {
     value: Json,
     skipTypeUrl: Boolean
   ): PMessage = {
-
     def parseValue(fd: FieldDescriptor, value: Json): PValue = {
       if (fd.isMapField) {
         value.obj match {
@@ -796,5 +794,4 @@ object JsonFormat {
         onError
     }
   }
-
 }

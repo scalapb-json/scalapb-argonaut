@@ -60,5 +60,4 @@ object StructFormat {
     else
       throw new JsonFormatException("Expected a null")
   }
-
 }
