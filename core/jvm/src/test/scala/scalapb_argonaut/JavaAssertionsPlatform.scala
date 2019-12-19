@@ -6,7 +6,6 @@ import scalapb.{GeneratedMessage, GeneratedMessageCompanion, JavaProtoSupport, M
 import utest._
 import scalapb_json.JsonFormatException
 import JsonFormatSpecBase.assertThrows
-import scala.reflect.ClassTag
 
 trait JavaAssertionsPlatform {
   self: TestSuite with JavaAssertions =>
