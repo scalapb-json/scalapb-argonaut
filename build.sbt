@@ -51,7 +51,7 @@ lazy val tests = crossProject(JVMPlatform, JSPlatform)
   .settings(
     commonSettings,
     noPublish,
-    libraryDependencies += "org.scalatest" %%% "scalatest" % "3.1.0-RC3" % "test",
+    libraryDependencies += "org.scalatest" %%% "scalatest" % "3.1.0" % "test",
   )
   .configure(_ dependsOn macros)
   .dependsOn(
