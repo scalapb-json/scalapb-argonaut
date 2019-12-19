@@ -8,8 +8,8 @@ trait JavaAssertions extends JavaAssertionsPlatform { self: utest.TestSuite =>
 
   def registeredCompanions: Seq[GeneratedMessageCompanion[_]] = Seq.empty
 
-  val ScalaTypeRegistry = registeredCompanions.foldLeft(TypeRegistry.empty)(
-    (r, c) => r.addMessageByCompanion(c.asInstanceOf[GenericCompanion])
+  val ScalaTypeRegistry = registeredCompanions.foldLeft(TypeRegistry.empty)((r, c) =>
+    r.addMessageByCompanion(c.asInstanceOf[GenericCompanion])
   )
   val ScalaJsonParser = new Parser(typeRegistry = ScalaTypeRegistry)
   val ScalaJsonPrinter = new Printer(typeRegistry = ScalaTypeRegistry)
