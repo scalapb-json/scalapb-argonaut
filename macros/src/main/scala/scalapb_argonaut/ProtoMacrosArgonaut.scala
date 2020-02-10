@@ -1,6 +1,6 @@
 package scalapb_argonaut
 
-import scalapb.{GeneratedMessage, GeneratedMessageCompanion, Message}
+import scalapb.{GeneratedMessage, GeneratedMessageCompanion}
 
 import scala.reflect.macros.blackbox
 import language.experimental.macros
@@ -14,7 +14,7 @@ object ProtoMacrosArgonaut {
       macro ProtoMacrosArgonaut.protoValueInterpolation
   }
 
-  implicit class FromJsonArgonaut[A <: GeneratedMessage with Message[A]](
+  implicit class FromJsonArgonaut[A <: GeneratedMessage](
     private val companion: GeneratedMessageCompanion[A]
   ) extends AnyVal {
     def fromJsonConstant(json: String): A =
@@ -46,7 +46,9 @@ class ProtoMacrosArgonaut(override val c: blackbox.Context)
     q"_root_.scalapb_argonaut.JsonFormat.fromJsonString[$A]($json)"
   }
 
-  override def fromJsonConstantImpl[A <: GeneratedMessage with Message[A]: c.WeakTypeTag: GeneratedMessageCompanion](
+  override def fromJsonConstantImpl[
+    A <: GeneratedMessage: c.WeakTypeTag: GeneratedMessageCompanion
+  ](
     string: String
   ): c.Tree = {
     val A = weakTypeTag[A]

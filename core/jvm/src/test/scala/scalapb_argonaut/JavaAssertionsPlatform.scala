@@ -2,7 +2,7 @@ package scalapb_argonaut
 
 import com.google.protobuf.{GeneratedMessageV3, InvalidProtocolBufferException}
 import com.google.protobuf.util.JsonFormat.{TypeRegistry => JavaTypeRegistry}
-import scalapb.{GeneratedMessage, GeneratedMessageCompanion, JavaProtoSupport, Message}
+import scalapb.{GeneratedMessage, GeneratedMessageCompanion, JavaProtoSupport}
 import utest._
 import scalapb_json.JsonFormatException
 import JsonFormatSpecBase.assertThrows
@@ -18,7 +18,7 @@ trait JavaAssertionsPlatform {
     com.google.protobuf.util.JsonFormat.printer().usingTypeRegistry(JavaJsonTypeRegistry)
   val JavaJsonParser = com.google.protobuf.util.JsonFormat.parser()
 
-  def assertJsonIsSameAsJava[T <: GeneratedMessage with Message[T]](
+  def assertJsonIsSameAsJava[T <: GeneratedMessage](
     v: T,
     checkRoundtrip: Boolean = true
   )(implicit cmp: GeneratedMessageCompanion[T]) = {
@@ -43,7 +43,7 @@ trait JavaAssertionsPlatform {
     b.build()
   }
 
-  def assertParse[T <: scalapb.GeneratedMessage with scalapb.Message[T], J <: GeneratedMessageV3](
+  def assertParse[T <: scalapb.GeneratedMessage, J <: GeneratedMessageV3](
     json: String,
     expected: T
   )(
@@ -61,7 +61,7 @@ trait JavaAssertionsPlatform {
     assert(cmp.fromJavaProto(parsedJava) == expected)
   }
 
-  def assertFails[T <: scalapb.GeneratedMessage with scalapb.Message[T], J <: GeneratedMessageV3](
+  def assertFails[T <: scalapb.GeneratedMessage, J <: GeneratedMessageV3](
     json: String,
     cmp: GeneratedMessageCompanion[T] with JavaProtoSupport[T, J]
   )(implicit parserContext: ParserContext) = {
