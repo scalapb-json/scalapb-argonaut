@@ -2,18 +2,9 @@ import scalapb.compiler.Version._
 import sbtrelease.ReleaseStateTransformations._
 import sbtcrossproject.CrossPlugin.autoImport.crossProject
 
-val Scala211 = "2.11.12"
+val Scala212 = "2.12.10"
 val argonautVersion = settingKey[String]("")
 val scalapbJsonCommonVersion = settingKey[String]("")
-
-val utestVersion = Def.setting {
-  CrossVersion.partialVersion(scalaVersion.value) match {
-    case Some((2, v)) if v <= 11 =>
-      "0.6.8"
-    case _ =>
-      "0.7.4"
-  }
-}
 
 val tagName = Def.setting {
   s"v${if (releaseUseGlobalVersion.value) (version in ThisBuild).value else version.value}"
@@ -24,14 +15,7 @@ val tagOrHash = Def.setting {
   else tagName.value
 }
 
-val unusedWarnings = Def.setting(
-  CrossVersion.partialVersion(scalaVersion.value) match {
-    case Some((2, 11)) =>
-      Seq("-Ywarn-unused-import")
-    case _ =>
-      Seq("-Ywarn-unused:imports")
-  }
-)
+val unusedWarnings = Seq("-Ywarn-unused:imports")
 
 lazy val macros = project
   .in(file("macros"))
@@ -129,10 +113,10 @@ noPublish
 lazy val commonSettings = Def.settings(
   scalapropsCoreSettings,
   unmanagedResources in Compile += (baseDirectory in LocalRootProject).value / "LICENSE.txt",
-  scalaVersion := Scala211,
-  crossScalaVersions := Seq("2.12.10", Scala211, "2.13.1"),
-  scalacOptions ++= unusedWarnings.value,
-  Seq(Compile, Test).flatMap(c => scalacOptions in (c, console) --= unusedWarnings.value),
+  scalaVersion := Scala212,
+  crossScalaVersions := Seq(Scala212, "2.13.1"),
+  scalacOptions ++= unusedWarnings,
+  Seq(Compile, Test).flatMap(c => scalacOptions in (c, console) --= unusedWarnings),
   scalacOptions ++= Seq("-feature", "-deprecation", "-language:existentials"),
   description := "Json/Protobuf convertors for ScalaPB",
   licenses += ("MIT", url("https://opensource.org/licenses/MIT")),
@@ -152,7 +136,7 @@ lazy val commonSettings = Def.settings(
     "io.github.scalapb-json" %%% "scalapb-json-common" % scalapbJsonCommonVersion.value,
     "com.thesamet.scalapb" %% "scalapb-runtime" % scalapbVersion % "protobuf,test",
     "io.argonaut" %%% "argonaut" % argonautVersion.value,
-    "com.lihaoyi" %%% "utest" % utestVersion.value % "test"
+    "com.lihaoyi" %%% "utest" % "0.7.4" % "test"
   ),
   testFrameworks += new TestFramework("utest.runner.Framework"),
   pomExtra in Global := {
