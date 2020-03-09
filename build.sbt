@@ -128,7 +128,7 @@ lazy val commonSettings = Def.settings(
   // https://github.com/scalapb/ScalaPB/commit/d3cc69515ea90f1af7eaf2732d22facb6c9e95e3
   PB.protocVersion := "-v371",
   PB.protoSources in Test := Seq(baseDirectory.value.getParentFile / "shared/src/test/protobuf"),
-  scalapbJsonCommonVersion := "0.6.0-M4",
+  scalapbJsonCommonVersion := "0.6.0",
   argonautVersion := "6.2.4",
   libraryDependencies ++= Seq(
     "com.github.scalaprops" %%% "scalaprops" % "0.6.3" % "test",
