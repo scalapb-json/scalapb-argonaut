@@ -524,8 +524,9 @@ object JsonFormatSpec extends TestSuite with JsonFormatSpecBase {
     "formatEnumAsNumber should format enums as number" - {
       val p = MyTest().update(_.optEnum := MyEnum.V2)
       assert(
-        new Printer(formattingEnumsAsNumber = true)
-          .toJson(p) == parse("""{"optEnum":2}""").getOrError
+        new Printer(formattingEnumsAsNumber = true).toJson(p) == parse(
+          """{"optEnum":2}"""
+        ).getOrError
       )
     }
 

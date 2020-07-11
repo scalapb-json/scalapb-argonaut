@@ -46,8 +46,8 @@ trait JavaAssertionsPlatform {
   def assertParse[T <: scalapb.GeneratedMessage, J <: GeneratedMessageV3](
     json: String,
     expected: T
-  )(
-    implicit cmp: GeneratedMessageCompanion[T] with JavaProtoSupport[T, J],
+  )(implicit
+    cmp: GeneratedMessageCompanion[T] with JavaProtoSupport[T, J],
     parserContext: ParserContext
   ) = {
     val parsedJava: J = {

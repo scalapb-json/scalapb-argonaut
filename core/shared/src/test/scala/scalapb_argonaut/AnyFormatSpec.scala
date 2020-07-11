@@ -14,11 +14,15 @@ object AnyFormatSpec extends TestSuite with JavaAssertions {
 
   val AnyExample = PBAny.pack(RawExample)
 
-  val AnyJson = parse(s"""{"@type":"type.googleapis.com/jsontest.AnyTest","field":"test"}""").getOrError
+  val AnyJson = parse(
+    s"""{"@type":"type.googleapis.com/jsontest.AnyTest","field":"test"}"""
+  ).getOrError
 
   val CustomPrefixAny = PBAny.pack(RawExample, "example.com/")
 
-  val CustomPrefixJson = parse(s"""{"@type":"example.com/jsontest.AnyTest","field":"test"}""").getOrError
+  val CustomPrefixJson = parse(
+    s"""{"@type":"example.com/jsontest.AnyTest","field":"test"}"""
+  ).getOrError
 
   val ManyExample = ManyAnyTest(
     Seq(
