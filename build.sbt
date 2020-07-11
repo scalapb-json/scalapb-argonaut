@@ -30,12 +30,12 @@ lazy val macros = project
     scalapbArgonautJVM,
   )
 
-lazy val tests = crossProject(JVMPlatform, JSPlatform)
+lazy val tests = crossProject(JVMPlatform)
   .in(file("tests"))
   .settings(
     commonSettings,
     noPublish,
-    libraryDependencies += "org.scalatest" %%% "scalatest" % "3.1.1" % "test",
+    libraryDependencies += "org.scalatest" %%% "scalatest" % "3.2.0" % "test",
   )
   .configure(_ dependsOn macros)
   .dependsOn(
@@ -43,7 +43,6 @@ lazy val tests = crossProject(JVMPlatform, JSPlatform)
   )
 
 lazy val testsJVM = tests.jvm
-lazy val testsJS = tests.js
 
 val scalapbArgonaut = crossProject(JVMPlatform, JSPlatform)
   .in(file("core"))
@@ -114,7 +113,7 @@ lazy val commonSettings = Def.settings(
   scalapropsCoreSettings,
   unmanagedResources in Compile += (baseDirectory in LocalRootProject).value / "LICENSE.txt",
   scalaVersion := Scala212,
-  crossScalaVersions := Seq(Scala212, "2.13.2"),
+  crossScalaVersions := Seq(Scala212, "2.13.3"),
   scalacOptions ++= unusedWarnings,
   Seq(Compile, Test).flatMap(c => scalacOptions in (c, console) --= unusedWarnings),
   scalacOptions ++= Seq("-feature", "-deprecation", "-language:existentials"),
@@ -123,12 +122,8 @@ lazy val commonSettings = Def.settings(
   organization := "io.github.scalapb-json",
   Project.inConfig(Test)(sbtprotoc.ProtocPlugin.protobufConfigSettings),
   PB.targets in Compile := Nil,
-  // Can't use -v380
-  // https://github.com/scalapb/ScalaPB/commit/ff99b075625fe684ce2eef7686d587fdbbf19b62
-  // https://github.com/scalapb/ScalaPB/commit/d3cc69515ea90f1af7eaf2732d22facb6c9e95e3
-  PB.protocVersion := "-v371",
   PB.protoSources in Test := Seq(baseDirectory.value.getParentFile / "shared/src/test/protobuf"),
-  scalapbJsonCommonVersion := "0.6.1",
+  scalapbJsonCommonVersion := "0.6.2",
   argonautVersion := "6.3.0",
   libraryDependencies ++= Seq(
     "com.github.scalaprops" %%% "scalaprops" % "0.8.0" % "test",
