@@ -22,27 +22,26 @@ object OneOfSpec extends TestSuite {
 
   override val tests = Tests {
     "oneof" - {
-      examples.foreach {
-        case (message: OneOf, json: String) =>
-          assert(
-            new Printer().toJson(message) == parse(json).getOrError
-          )
-          assert(
-            new Printer().toJson(message) ==
-              parse(
-                ProtobufJavaPrinter().print(toJavaProto(message))
-              ).getOrError
-          )
+      examples.foreach { case (message: OneOf, json: String) =>
+        assert(
+          new Printer().toJson(message) == parse(json).getOrError
+        )
+        assert(
+          new Printer().toJson(message) ==
+            parse(
+              ProtobufJavaPrinter().print(toJavaProto(message))
+            ).getOrError
+        )
 
-          assert(
-            new Printer().includingDefaultValueFields.toJson(message) == parse(json).getOrError
-          )
-          assert(
-            new Printer().includingDefaultValueFields.toJson(message) ==
-              parse(
-                ProtobufJavaPrinter().includingDefaultValueFields().print(toJavaProto(message))
-              ).getOrError
-          )
+        assert(
+          new Printer().includingDefaultValueFields.toJson(message) == parse(json).getOrError
+        )
+        assert(
+          new Printer().includingDefaultValueFields.toJson(message) ==
+            parse(
+              ProtobufJavaPrinter().includingDefaultValueFields().print(toJavaProto(message))
+            ).getOrError
+        )
       }
     }
 
