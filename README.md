@@ -10,19 +10,19 @@ Include in your `build.sbt` file
 ### core
 
 ```scala
-libraryDependencies += "io.github.scalapb-json" %% "scalapb-argonaut" % "0.7.1"
+libraryDependencies += "io.github.scalapb-json" %% "scalapb-argonaut" % "0.7.2"
 ```
 
 for scala-js
 
 ```scala
-libraryDependencies += "io.github.scalapb-json" %%% "scalapb-argonaut" % "0.7.1"
+libraryDependencies += "io.github.scalapb-json" %%% "scalapb-argonaut" % "0.7.2"
 ```
 
 ### macros
 
 ```scala
-libraryDependencies += "io.github.scalapb-json" %%% "scalapb-argonaut-macros" % "0.7.1"
+libraryDependencies += "io.github.scalapb-json" %%% "scalapb-argonaut-macros" % "0.7.2"
 ```
 
 ## Usage
