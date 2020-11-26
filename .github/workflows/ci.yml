@@ -21,6 +21,6 @@ jobs:
         java-version: "adopt@1.${{ matrix.java }}"
     - uses: coursier/cache-action@v5
     - run: sbt -v
-           scalafmtCheck
+           scalafmtCheckAll
            scalafmtSbtCheck
            "+ test"
