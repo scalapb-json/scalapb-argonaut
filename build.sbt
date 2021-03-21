@@ -44,7 +44,7 @@ lazy val tests = crossProject(JVMPlatform)
 
 lazy val testsJVM = tests.jvm
 
-val scalapbArgonaut = crossProject(JVMPlatform, JSPlatform)
+val scalapbArgonaut = crossProject(JVMPlatform, JSPlatform, NativePlatform)
   .in(file("core"))
   .enablePlugins(BuildInfoPlugin)
   .settings(
@@ -93,6 +93,20 @@ val scalapbArgonaut = crossProject(JVMPlatform, JSPlatform)
       val g = "https://raw.githubusercontent.com/scalapb-json/scalapb-argonaut/" + tagOrHash.value
       s"-P:scalajs:mapSourceURI:$a->$g/"
     },
+  )
+  .nativeSettings(
+    nativeLinkStubs := true,
+  )
+  .platformsSettings(JVMPlatform, JSPlatform)(
+    Seq(Compile, Test).map { x =>
+      x / unmanagedSourceDirectories += {
+        baseDirectory.value.getParentFile / "jvm-js" / "src" / Defaults.nameForSrc(
+          x.name
+        ) / "scala",
+      }
+    },
+  )
+  .platformsSettings(JSPlatform, NativePlatform)(
     (Test / PB.targets) := Seq(
       scalapb.gen(javaConversions = false) -> (Test / sourceManaged).value
     )
@@ -124,7 +138,7 @@ lazy val commonSettings = Def.settings(
   Project.inConfig(Test)(sbtprotoc.ProtocPlugin.protobufConfigSettings),
   Compile / PB.targets := Nil,
   (Test / PB.protoSources) := Seq(baseDirectory.value.getParentFile / "shared/src/test/protobuf"),
-  scalapbJsonCommonVersion := "0.8.0",
+  scalapbJsonCommonVersion := "0.8.1",
   argonautVersion := "6.3.3",
   libraryDependencies ++= Seq(
     "com.github.scalaprops" %%% "scalaprops" % "0.8.2" % "test",
