@@ -79,6 +79,7 @@ val scalapbArgonaut = crossProject(JVMPlatform, JSPlatform)
       scalapb.gen(javaConversions = true) -> (Test / sourceManaged).value
     ),
     libraryDependencies ++= Seq(
+      "com.github.scalaprops" %%% "scalaprops-shapeless" % "0.4.0" % "test",
       "com.google.protobuf" % "protobuf-java-util" % protobufVersion % "test",
       "com.google.protobuf" % "protobuf-java" % protobufVersion % "protobuf"
     )
@@ -127,7 +128,6 @@ lazy val commonSettings = Def.settings(
   argonautVersion := "6.3.3",
   libraryDependencies ++= Seq(
     "com.github.scalaprops" %%% "scalaprops" % "0.8.2" % "test",
-    "com.github.scalaprops" %%% "scalaprops-shapeless" % "0.4.0" % "test",
     "io.github.scalapb-json" %%% "scalapb-json-common" % scalapbJsonCommonVersion.value,
     "com.thesamet.scalapb" %%% "scalapb-runtime" % scalapbVersion % "protobuf,test",
     "io.argonaut" %%% "argonaut" % argonautVersion.value,
