@@ -22,7 +22,7 @@ object RepeatablesSpecJVM extends Scalaprops {
     val javaPrinter = com.google.protobuf.util.JsonFormat.printer()
     val companion = implicitly[GeneratedMessageCompanion[RepeatablesTest]]
       .asInstanceOf[JavaProtoSupport[RepeatablesTest, com.google.protobuf.GeneratedMessageV3]]
-    forAll { v: RepeatablesTest =>
+    forAll { (v: RepeatablesTest) =>
       val scalaJson = JsonFormat.printer.print(v)
       val javaJson = javaPrinter.print(companion.toJavaProto(v))
       import argonaut.JsonParser.parse
