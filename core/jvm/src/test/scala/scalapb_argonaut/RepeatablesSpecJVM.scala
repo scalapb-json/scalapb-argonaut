@@ -1,21 +1,12 @@
 package scalapb_argonaut
 
-import scalapb.{GeneratedMessageCompanion, JavaProtoSupport, UnknownFieldSet}
+import scalapb.{GeneratedMessageCompanion, JavaProtoSupport}
 import scalapb.e2e.repeatables.RepeatablesTest
-import scalaprops.Gen
 import scalaprops.Scalaprops
 import scalaprops.Property.forAll
-import com.google.protobuf.ByteString
 
 object RepeatablesSpecJVM extends Scalaprops {
-  private[this] implicit val byteStringGen: Gen[ByteString] =
-    Gen.alphaNumString.map(ByteString.copyFromUtf8)
-
-  private[this] val g = new RepeatableTestGen({
-    import scalaprops.ScalapropsShapeless._
-    import RepeatableTestGen.Base._
-    Gen[UnknownFieldSet]
-  })
+  private[this] val g = new RepeatableTestGen(UnknownFieldSetGenInstance.value)
   import g._
 
   val `UnknownFieldSet same as java` = {

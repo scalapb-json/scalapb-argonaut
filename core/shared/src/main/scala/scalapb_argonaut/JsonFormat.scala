@@ -64,7 +64,7 @@ case class FormatRegistry(
   }
 }
 
-class Printer(config: Printer.PrinterConfig) {
+class Printer private (config: Printer.PrinterConfig) {
   def this() = this(Printer.defaultConfig)
   @deprecated(
     message =
@@ -310,7 +310,7 @@ object Parser {
   private val memorizedFieldNameMap = new MemorizedFieldNameMap()
 }
 
-class Parser(config: Parser.ParserConfig) {
+class Parser private (config: Parser.ParserConfig) {
   def this() = this(Parser.defaultConfig)
 
   @deprecated(
