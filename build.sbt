@@ -6,6 +6,33 @@ val Scala212 = "2.12.14"
 val argonautVersion = settingKey[String]("")
 val scalapbJsonCommonVersion = settingKey[String]("")
 
+lazy val disableScala3 = Def.settings(
+  libraryDependencies := {
+    if (scalaBinaryVersion.value == "3") {
+      Nil
+    } else {
+      libraryDependencies.value
+    }
+  },
+  Seq(Compile, Test).map { x =>
+    (x / sources) := {
+      if (scalaBinaryVersion.value == "3") {
+        Nil
+      } else {
+        (x / sources).value
+      }
+    }
+  },
+  Test / test := {
+    if (scalaBinaryVersion.value == "3") {
+      ()
+    } else {
+      (Test / test).value
+    }
+  },
+  publish / skip := (scalaBinaryVersion.value == "3"),
+)
+
 val tagName = Def.setting {
   s"v${if (releaseUseGlobalVersion.value) (ThisBuild / version).value else version.value}"
 }
@@ -25,6 +52,7 @@ lazy val macros = project
     libraryDependencies ++= Seq(
       "io.github.scalapb-json" %%% "scalapb-json-macros" % scalapbJsonCommonVersion.value,
     ),
+    disableScala3, // TODO
   )
   .dependsOn(
     scalapbArgonautJVM,
@@ -36,6 +64,7 @@ lazy val tests = crossProject(JVMPlatform)
     commonSettings,
     noPublish,
     libraryDependencies += "org.scalatest" %%% "scalatest" % "3.2.9" % "test",
+    disableScala3, // TODO
   )
   .configure(_ dependsOn macros)
   .dependsOn(
@@ -98,9 +127,6 @@ val scalapbArgonaut = crossProject(JVMPlatform, JSPlatform, NativePlatform)
       }
     },
   )
-  .nativeSettings(
-    nativeLinkStubs := true,
-  )
   .platformsSettings(JVMPlatform, JSPlatform)(
     Seq(Compile, Test).map { x =>
       x / unmanagedSourceDirectories += {
@@ -114,6 +140,10 @@ val scalapbArgonaut = crossProject(JVMPlatform, JSPlatform, NativePlatform)
     (Test / PB.targets) := Seq(
       scalapb.gen(javaConversions = false) -> (Test / sourceManaged).value
     )
+  )
+  .nativeSettings(
+    nativeLinkStubs := true,
+    disableScala3,
   )
 
 commonSettings
@@ -133,7 +163,13 @@ lazy val commonSettings = Def.settings(
   (Compile / unmanagedResources) += (LocalRootProject / baseDirectory).value / "LICENSE.txt",
   scalaVersion := Scala212,
   crossScalaVersions := Seq(Scala212, "2.13.6"),
-  scalacOptions ++= unusedWarnings,
+  scalacOptions ++= {
+    if (scalaBinaryVersion.value == "3") {
+      Nil
+    } else {
+      unusedWarnings
+    }
+  },
   Seq(Compile, Test).flatMap(c => c / console / scalacOptions --= unusedWarnings),
   scalacOptions ++= Seq("-feature", "-deprecation", "-language:existentials"),
   description := "Json/Protobuf convertors for ScalaPB",
