@@ -283,7 +283,8 @@ class Printer(config: Printer.PrinterConfig) {
         }
       case PBoolean(v) => Json.jBool(v)
       case PString(v) => Json.jString(v)
-      case PByteString(v) => Json.jString(java.util.Base64.getEncoder.encodeToString(v.toByteArray()))
+      case PByteString(v) =>
+        Json.jString(java.util.Base64.getEncoder.encodeToString(v.toByteArray()))
       case _: PMessage | PRepeated(_) | PEmpty => throw new RuntimeException("Should not happen")
     }
 
