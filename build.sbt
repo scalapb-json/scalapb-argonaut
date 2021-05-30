@@ -91,7 +91,11 @@ val scalapbArgonaut = crossProject(JVMPlatform, JSPlatform, NativePlatform)
     scalacOptions += {
       val a = (LocalRootProject / baseDirectory).value.toURI.toString
       val g = "https://raw.githubusercontent.com/scalapb-json/scalapb-argonaut/" + tagOrHash.value
-      s"-P:scalajs:mapSourceURI:$a->$g/"
+      if (scalaBinaryVersion.value == "3") {
+        "-scalajs-mapSourceURI:$a->$g/"
+      } else {
+        "-P:scalajs:mapSourceURI:$a->$g/"
+      }
     },
   )
   .nativeSettings(
