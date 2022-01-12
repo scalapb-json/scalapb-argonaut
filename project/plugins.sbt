@@ -1,4 +1,4 @@
-addSbtPlugin("com.github.scalaprops" % "sbt-scalaprops" % "0.4.2")
+addSbtPlugin("com.github.scalaprops" % "sbt-scalaprops" % "0.4.3")
 
 addSbtPlugin("com.eed3si9n" % "sbt-buildinfo" % "0.10.0")
 
@@ -16,7 +16,7 @@ addSbtPlugin("org.scalameta" % "sbt-scalafmt" % "2.4.6")
 
 addSbtPlugin("com.thesamet" % "sbt-protoc" % "1.0.6")
 
-addSbtPlugin("org.scala-native" % "sbt-scala-native" % "0.4.3-RC1")
+addSbtPlugin("org.scala-native" % "sbt-scala-native" % "0.4.3-RC2")
 
 addSbtPlugin("org.portable-scala" % "sbt-scala-native-crossproject" % "1.1.0")
 
