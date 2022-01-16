@@ -1,5 +1,5 @@
 # scalapb-argonaut
-[![scaladoc](https://javadoc-badge.appspot.com/io.github.scalapb-json/scalapb-argonaut_2.12.svg?label=scaladoc)](https://javadoc-badge.appspot.com/io.github.scalapb-json/scalapb-argonaut_2.12/scalapb_argonaut/index.html?javadocio=true)
+[![scaladoc](https://javadoc.io/badge2/io.github.scalapb-json/scalapb-argonaut_3/javadoc.svg)](https://javadoc.io/doc/io.github.scalapb-json/scalapb-argonaut_3/latest/api/scalapb_argonaut.html)
 
 The structure of this project is hugely inspired by [scalapb-json4s](https://github.com/scalapb/scalapb-json4s)
 
