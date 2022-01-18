@@ -181,7 +181,7 @@ lazy val commonSettings = Def.settings(
   scalapbJsonCommonVersion := "0.8.3",
   argonautVersion := "6.3.7",
   libraryDependencies ++= Seq(
-    "com.github.scalaprops" %%% "scalaprops" % "0.8.4" % "test",
+    "com.github.scalaprops" %%% "scalaprops" % "0.9.0" % "test",
     "io.github.scalapb-json" %%% "scalapb-json-common" % scalapbJsonCommonVersion.value,
     "com.thesamet.scalapb" %%% "scalapb-runtime" % scalapbVersion % "protobuf,test",
     "io.argonaut" %%% "argonaut" % argonautVersion.value,
