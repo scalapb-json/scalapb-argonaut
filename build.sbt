@@ -52,7 +52,6 @@ lazy val macros = project
     libraryDependencies ++= Seq(
       "io.github.scalapb-json" %%% "scalapb-json-macros" % scalapbJsonCommonVersion.value,
     ),
-    disableScala3, // TODO
   )
   .dependsOn(
     scalapbArgonautJVM,
@@ -64,7 +63,6 @@ lazy val tests = crossProject(JVMPlatform)
     commonSettings,
     noPublish,
     libraryDependencies += "org.scalatest" %%% "scalatest" % "3.2.11" % "test",
-    disableScala3, // TODO
   )
   .configure(_ dependsOn macros)
   .dependsOn(
