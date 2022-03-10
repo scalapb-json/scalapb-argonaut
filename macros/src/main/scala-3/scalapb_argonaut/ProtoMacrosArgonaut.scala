@@ -1,5 +1,12 @@
 package scalapb_argonaut
 
+import argonaut.Json
+import argonaut.Json.JsonArray
+import argonaut.JsonNumber
+import argonaut.JsonObject
+import argonaut.JsonLong
+import argonaut.JsonDecimal
+import argonaut.JsonBigDecimal
 import argonaut.Parse
 import com.google.protobuf.struct.Struct
 import com.google.protobuf.struct.Value
@@ -13,6 +20,52 @@ import scala.util.Try
 import scala.util.control.NonFatal
 
 object ProtoMacrosArgonaut {
+
+  implicit val toExprJsonNumber: ToExpr[JsonNumber] =
+    new ToExpr[JsonNumber] {
+      def apply(j: JsonNumber)(using Quotes) = j match {
+        case JsonLong(value) =>
+          '{ JsonLong(${ Expr(value) }) }
+        case JsonBigDecimal(value) =>
+          '{ JsonBigDecimal(${ Expr(value) }) }
+        case JsonDecimal(value) =>
+          '{ JsonNumber.unsafeDecimal(${ Expr(value) }) }
+      }
+    }
+
+  implicit val toExprJsonObject: ToExpr[JsonObject] =
+    new ToExpr[JsonObject] {
+      def apply(j: JsonObject)(using Quotes) = '{
+        JsonObject.fromIterable(${ summon[ToExpr[List[(String, Json)]]].apply(j.toList) })
+      }
+    }
+
+  implicit val toExprJson: ToExpr[Json] =
+    new ToExpr[Json] {
+      def apply(j: Json)(using Quotes) = j.fold[Expr[Json]](
+        jsonNull = '{ Json.jNull },
+        jsonBool = value => {
+          if (value) '{ Json.jTrue }
+          else '{ Json.jFalse }
+        },
+        jsonNumber = (value: JsonNumber) =>
+          '{
+            Json.jNumber(${ summon[ToExpr[JsonNumber]].apply(value) })
+          },
+        jsonString = (value: String) =>
+          '{
+            Json.jString(${ summon[ToExpr[String]].apply(value) })
+          },
+        jsonArray = (value: JsonArray) =>
+          '{
+            Json.jArray(${ summon[ToExpr[List[Json]]].apply(value) })
+          },
+        jsonObject = (value: JsonObject) =>
+          '{
+            Json.jObject(${ summon[ToExpr[JsonObject]].apply(value) })
+          }
+      )
+    }
 
   extension (inline s: StringContext) {
     inline def struct(): com.google.protobuf.struct.Struct =
@@ -92,11 +145,13 @@ object ProtoMacrosArgonaut {
     implicit val c: GeneratedMessageCompanion[A] =
       clazz.getField(MODULE_INSTANCE_NAME).get(null).asInstanceOf[GeneratedMessageCompanion[A]]
 
+    val jsonObj = argonaut.Parse.parse(str).left.map(report.errorAndAbort).merge
     // check compile time
-    JsonFormat.fromJsonString[A](str)
+    JsonFormat.fromJson[A](jsonObj)
+    val expr = summon[ToExpr[Json]].apply(jsonObj)
 
     '{
-      JsonFormat.fromJsonString[A](${ Expr(str) })($companion)
+      JsonFormat.fromJson[A]($expr)($companion)
     }
   }
 }
