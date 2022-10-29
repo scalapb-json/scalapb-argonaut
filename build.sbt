@@ -6,33 +6,6 @@ val Scala212 = "2.12.17"
 val argonautVersion = settingKey[String]("")
 val scalapbJsonCommonVersion = settingKey[String]("")
 
-lazy val disableScala3 = Def.settings(
-  libraryDependencies := {
-    if (scalaBinaryVersion.value == "3") {
-      Nil
-    } else {
-      libraryDependencies.value
-    }
-  },
-  Seq(Compile, Test).map { x =>
-    (x / sources) := {
-      if (scalaBinaryVersion.value == "3") {
-        Nil
-      } else {
-        (x / sources).value
-      }
-    }
-  },
-  Test / test := {
-    if (scalaBinaryVersion.value == "3") {
-      ()
-    } else {
-      (Test / test).value
-    }
-  },
-  publish / skip := (scalaBinaryVersion.value == "3"),
-)
-
 val tagName = Def.setting {
   s"v${if (releaseUseGlobalVersion.value) (ThisBuild / version).value else version.value}"
 }
@@ -141,7 +114,6 @@ val scalapbArgonaut = crossProject(JVMPlatform, JSPlatform, NativePlatform)
   )
   .nativeSettings(
     nativeLinkStubs := true,
-    disableScala3,
   )
 
 commonSettings
