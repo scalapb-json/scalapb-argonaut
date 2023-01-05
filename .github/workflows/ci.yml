@@ -21,7 +21,6 @@ jobs:
       with:
         java-version: ${{ matrix.java }}
         distribution: temurin
-    - uses: coursier/cache-action@v6
     - run: sbt -v
            "+ scalafmtCheckAll"
            scalafmtSbtCheck
