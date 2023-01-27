@@ -79,7 +79,7 @@ val scalapbArgonaut = crossProject(JVMPlatform, JSPlatform, NativePlatform)
       scalapb.gen(javaConversions = true) -> (Test / sourceManaged).value
     ),
     libraryDependencies ++= Seq(
-      "com.github.scalaprops" %%% "scalaprops-shapeless" % "0.5.0" % "test",
+      "com.github.scalaprops" %%% "scalaprops-shapeless" % "0.5.1" % "test",
       "com.google.protobuf" % "protobuf-java-util" % "3.21.12" % "test",
       "com.google.protobuf" % "protobuf-java" % "3.21.12" % "protobuf"
     )
