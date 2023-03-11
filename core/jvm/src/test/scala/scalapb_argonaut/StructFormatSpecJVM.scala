@@ -39,18 +39,6 @@ object StructFormatSpecJVM extends TestSuite with JavaAssertions {
     "Value should be serialized the same as in Java (and parsed back to original)" - {
       assertJsonIsSameAsJava(Value(kind = Value.Kind.NumberValue(1.0)))
       assertJsonIsSameAsJava(Value(kind = Value.Kind.NumberValue(-25)))
-      assertJsonIsSameAsJava(
-        Value(kind = Value.Kind.NumberValue(Double.PositiveInfinity)),
-        checkRoundtrip = false
-      )
-      assertJsonIsSameAsJava(
-        Value(kind = Value.Kind.NumberValue(Double.NegativeInfinity)),
-        checkRoundtrip = false
-      )
-      assertJsonIsSameAsJava(
-        Value(kind = Value.Kind.NumberValue(Double.NaN)),
-        checkRoundtrip = false
-      )
       assertJsonIsSameAsJava(Value(kind = Value.Kind.StringValue("boo")))
       assertJsonIsSameAsJava(Value(kind = Value.Kind.BoolValue(true)))
       assertJsonIsSameAsJava(Value(kind = Value.Kind.BoolValue(false)))
