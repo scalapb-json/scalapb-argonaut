@@ -20,7 +20,7 @@ import scala.util.control.NonFatal
 case class Formatter[T](writer: (Printer, T) => Json, parser: (Parser, Json) => T)
 
 case class FormatRegistry(
-  messageFormatters: Map[Class[_], Formatter[_]] = Map.empty,
+  messageFormatters: Map[Class[?], Formatter[?]] = Map.empty,
   enumFormatters: Map[EnumDescriptor, EnumFormatter[EnumValueDescriptor]] = Map.empty,
   registeredCompanions: Seq[GenericCompanion] = Seq.empty
 ) {
@@ -45,11 +45,11 @@ case class FormatRegistry(
     registerMessageFormatter((p: Printer, t: T) => writer(t), (p: Parser, v: Json) => parser(v))
   }
 
-  def getMessageWriter[T](klass: Class[_ <: T]): Option[(Printer, T) => Json] = {
+  def getMessageWriter[T](klass: Class[? <: T]): Option[(Printer, T) => Json] = {
     messageFormatters.get(klass).asInstanceOf[Option[Formatter[T]]].map(_.writer)
   }
 
-  def getMessageParser[T](klass: Class[_ <: T]): Option[(Parser, Json) => T] = {
+  def getMessageParser[T](klass: Class[? <: T]): Option[(Parser, Json) => T] = {
     messageFormatters.get(klass).asInstanceOf[Option[Formatter[T]]].map(_.parser)
   }
 
@@ -371,7 +371,7 @@ class Parser private (config: Parser.ParserConfig) {
   }
 
   private def fromJsonToPMessage(
-    cmp: GeneratedMessageCompanion[_],
+    cmp: GeneratedMessageCompanion[?],
     value: Json,
     skipTypeUrl: Boolean
   ): PMessage = {
@@ -502,7 +502,7 @@ class Parser private (config: Parser.ParserConfig) {
   }
 
   protected def parseSingleValue(
-    containerCompanion: GeneratedMessageCompanion[_],
+    containerCompanion: GeneratedMessageCompanion[?],
     fd: FieldDescriptor,
     value: Json
   ): PValue =

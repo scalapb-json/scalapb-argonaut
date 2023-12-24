@@ -10,7 +10,7 @@ import JsonFormatSpecBase.assertThrows
 trait JavaAssertionsPlatform {
   self: TestSuite with JavaAssertions =>
 
-  def registeredCompanions: Seq[GeneratedMessageCompanion[_]]
+  def registeredCompanions: Seq[GeneratedMessageCompanion[?]]
 
   val JavaJsonTypeRegistry =
     this.registeredCompanions
