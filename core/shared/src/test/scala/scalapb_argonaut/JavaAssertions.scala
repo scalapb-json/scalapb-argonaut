@@ -6,7 +6,7 @@ import scalapb_json._
 
 trait JavaAssertions extends JavaAssertionsPlatform { self: utest.TestSuite =>
 
-  def registeredCompanions: Seq[GeneratedMessageCompanion[_]] = Seq.empty
+  def registeredCompanions: Seq[GeneratedMessageCompanion[?]] = Seq.empty
 
   val ScalaTypeRegistry = registeredCompanions.foldLeft(TypeRegistry.empty)((r, c) =>
     r.addMessageByCompanion(c.asInstanceOf[GenericCompanion])
