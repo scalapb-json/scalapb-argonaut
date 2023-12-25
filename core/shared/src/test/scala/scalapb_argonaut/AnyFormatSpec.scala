@@ -5,6 +5,7 @@ import jsontest.anytests.{AnyTest, ManyAnyTest}
 import utest._
 import argonaut.JsonParser.parse
 import scalapb_json._
+import scalapb.GeneratedMessageCompanion
 import EitherOps._
 
 object AnyFormatSpec extends TestSuite with JavaAssertions {
@@ -41,7 +42,7 @@ object AnyFormatSpec extends TestSuite with JavaAssertions {
       |}
     """.stripMargin).getOrError
 
-  override def registeredCompanions = Seq(AnyTest, ManyAnyTest)
+  override def registeredCompanions: Seq[GeneratedMessageCompanion[?]] = Seq(AnyTest, ManyAnyTest)
 
   // For clarity
   def UnregisteredPrinter = JsonFormat.printer

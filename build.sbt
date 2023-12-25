@@ -137,7 +137,9 @@ lazy val commonSettings = Def.settings(
     if (scalaBinaryVersion.value == "3") {
       Nil
     } else {
-      unusedWarnings
+      unusedWarnings ++ Seq(
+        "-Xsource:3"
+      )
     }
   },
   Seq(Compile, Test).flatMap(c => c / console / scalacOptions --= unusedWarnings),
