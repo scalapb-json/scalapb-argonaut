@@ -22,7 +22,7 @@ object AnyFormat {
     // ... and add the @type marker to the resulting JSON
     printer.toJson(message).obj match {
       case Some(fields) =>
-        Json.obj(("@type" -> Json.jString(any.typeUrl)) :: fields.toList: _*)
+        Json.obj((("@type" -> Json.jString(any.typeUrl)) :: fields.toList) *)
       case value =>
         // Safety net, this shouldn't happen
         throw new IllegalStateException(
