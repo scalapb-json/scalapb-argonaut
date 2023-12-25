@@ -159,7 +159,7 @@ class Printer private (config: Printer.PrinterConfig) {
                 )
               }
               key -> value
-            }.toList: _*)
+            }.toList *)
           )
         } else {
           b += JField(name, Json.jArray(xs.iterator.map(toJson).toList))
@@ -187,7 +187,7 @@ class Printer private (config: Printer.PrinterConfig) {
           b += JField(
             name,
             Json.array(
-              xs.map(serializeSingleValue(fd, _, config.isFormattingLongAsNumber)): _*
+              xs.map(serializeSingleValue(fd, _, config.isFormattingLongAsNumber)) *
             )
           )
         }
@@ -221,7 +221,7 @@ class Printer private (config: Printer.PrinterConfig) {
             serializeNonMessageField(f, name, m.getField(f), b)
           }
         }
-        Json.obj(b.result(): _*)
+        Json.obj(b.result() *)
     }
   }
 
@@ -638,7 +638,7 @@ object JsonFormat {
       StructFormat.structParser
     )
     .registerWriter[com.google.protobuf.struct.ListValue](
-      x => Json.array(StructFormat.listValueWriter(x): _*),
+      x => Json.array(StructFormat.listValueWriter(x) *),
       StructFormat.listValueParser
     )
     .registerMessageFormatter[com.google.protobuf.any.Any](AnyFormat.anyWriter, AnyFormat.anyParser)
