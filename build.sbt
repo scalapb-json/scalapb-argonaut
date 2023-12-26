@@ -44,6 +44,15 @@ lazy val tests = crossProject(JVMPlatform)
 
 lazy val testsJVM = tests.jvm
 
+val scalapbScala3Sources = Def.setting(
+  scalaBinaryVersion.value match {
+    case "2.12" =>
+      false
+    case _ =>
+      true
+  }
+)
+
 val scalapbArgonaut = crossProject(JVMPlatform, JSPlatform, NativePlatform)
   .in(file("core"))
   .enablePlugins(BuildInfoPlugin)
@@ -76,7 +85,10 @@ val scalapbArgonaut = crossProject(JVMPlatform, JSPlatform, NativePlatform)
   .jvmSettings(
     (Test / PB.targets) := Seq(
       PB.gens.java -> (Test / sourceManaged).value,
-      scalapb.gen(javaConversions = true) -> (Test / sourceManaged).value
+      scalapb.gen(
+        javaConversions = true,
+        scala3Sources = scalapbScala3Sources.value
+      ) -> (Test / sourceManaged).value
     ),
     libraryDependencies ++= Seq(
       "com.github.scalaprops" %%% "scalaprops-shapeless" % "0.5.1" % "test",
@@ -109,7 +121,10 @@ val scalapbArgonaut = crossProject(JVMPlatform, JSPlatform, NativePlatform)
   )
   .platformsSettings(JSPlatform, NativePlatform)(
     (Test / PB.targets) := Seq(
-      scalapb.gen(javaConversions = false) -> (Test / sourceManaged).value
+      scalapb.gen(
+        javaConversions = false,
+        scala3Sources = scalapbScala3Sources.value
+      ) -> (Test / sourceManaged).value
     )
   )
   .nativeSettings(
