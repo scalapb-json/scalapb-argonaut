@@ -147,7 +147,7 @@ lazy val commonSettings = Def.settings(
   scalapropsCoreSettings,
   (Compile / unmanagedResources) += (LocalRootProject / baseDirectory).value / "LICENSE.txt",
   scalaVersion := Scala212,
-  crossScalaVersions := Seq(Scala212, "2.13.14", "3.3.3"),
+  crossScalaVersions := Seq(Scala212, "2.13.14", "3.4.1"),
   scalacOptions ++= {
     if (scalaBinaryVersion.value == "3") {
       Nil
