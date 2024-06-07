@@ -203,8 +203,8 @@ lazy val commonSettings = Def.settings(
   },
   compileOrder := {
     if (scalaBinaryVersion.value == "3") {
-      // https://github.com/lampepfl/dotty/issues/10956
-      // https://github.com/lampepfl/dotty/issues/6138
+      // https://github.com/scala/scala3/issues/10956
+      // https://github.com/scala/scala3/issues/6138
       CompileOrder.JavaThenScala
     } else {
       compileOrder.value
