@@ -7,7 +7,7 @@ import scalaprops.ScalapropsShapeless.given
 import RepeatableTestGen.Base._
 
 object UnknownFieldSetGenInstance {
-  private[this] implicit val byteStringGen: Gen[ByteString] =
+  private implicit val byteStringGen: Gen[ByteString] =
     Gen.alphaNumString.map(ByteString.copyFromUtf8)
 
   val value: Gen[UnknownFieldSet] = Gen[UnknownFieldSet]

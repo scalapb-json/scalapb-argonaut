@@ -30,7 +30,7 @@ object ProtoMacrosArgonaut {
 
   extension [A <: GeneratedMessage](companion: GeneratedMessageCompanion[A]) {
     def fromJson(json: String): A =
-      JsonFormat.fromJsonString[A](json)(companion)
+      JsonFormat.fromJsonString[A](json)(using companion)
 
     def fromJsonOpt(json: String): Option[A] =
       try {
@@ -57,7 +57,7 @@ object ProtoMacrosArgonaut {
       }
   }
 
-  private[this] def structInterpolation(
+  private def structInterpolation(
     s: Expr[StringContext]
   )(using quote: Quotes): Expr[Struct] = {
     import quote.reflect.report
@@ -73,7 +73,7 @@ object ProtoMacrosArgonaut {
     )
   }
 
-  private[this] def valueInterpolation(s: Expr[StringContext])(using quote: Quotes): Expr[Value] = {
+  private def valueInterpolation(s: Expr[StringContext])(using quote: Quotes): Expr[Value] = {
     import quote.reflect.report
     val Seq(str) = s.valueOrAbort.parts
     val json = Parse.parse(str).left.map(report.errorAndAbort).merge
@@ -82,7 +82,7 @@ object ProtoMacrosArgonaut {
     )
   }
 
-  private[this] def fromJsonConstantImpl[A <: GeneratedMessage: Type](
+  private def fromJsonConstantImpl[A <: GeneratedMessage: Type](
     json: Expr[String],
     companion: Expr[GeneratedMessageCompanion[A]]
   )(using quote: Quotes): Expr[A] = {
@@ -96,7 +96,7 @@ object ProtoMacrosArgonaut {
     JsonFormat.fromJsonString[A](str)
 
     '{
-      JsonFormat.fromJsonString[A](${ Expr(str) })($companion)
+      JsonFormat.fromJsonString[A](${ Expr(str) })(using $companion)
     }
   }
 }
