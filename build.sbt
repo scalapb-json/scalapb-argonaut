@@ -146,12 +146,17 @@ lazy val commonSettings = Def.settings(
   scalaVersion := Scala212,
   crossScalaVersions := Seq(Scala212, "2.13.16", "3.3.6"),
   scalacOptions ++= {
-    if (scalaBinaryVersion.value == "3") {
-      Nil
-    } else {
-      unusedWarnings ++ Seq(
-        "-Xsource:3"
-      )
+    scalaBinaryVersion.value match {
+      case "3" =>
+        Nil
+      case "2.13" =>
+        unusedWarnings ++ Seq(
+          "-Xsource:3-cross"
+        )
+      case "2.12" =>
+        unusedWarnings ++ Seq(
+          "-Xsource:3"
+        )
     }
   },
   Seq(Compile, Test).flatMap(c => c / console / scalacOptions --= unusedWarnings),
