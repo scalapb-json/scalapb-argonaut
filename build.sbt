@@ -163,12 +163,12 @@ lazy val commonSettings = Def.settings(
   Compile / PB.targets := Nil,
   (Test / PB.protoSources) := Seq(baseDirectory.value.getParentFile / "shared/src/test/protobuf"),
   scalapbJsonCommonVersion := "0.10.0",
-  argonautVersion := "6.3.10",
+  argonautVersion := "6.3.11",
   libraryDependencies ++= Seq(
     "com.github.scalaprops" %%% "scalaprops" % "0.10.0" % "test",
     "io.github.scalapb-json" %%% "scalapb-json-common" % scalapbJsonCommonVersion.value,
     "com.thesamet.scalapb" %%% "scalapb-runtime" % scalapbVersion % "protobuf,test",
-    "io.argonaut" %%% "argonaut" % argonautVersion.value,
+    "io.github.argonaut-io" %%% "argonaut" % argonautVersion.value,
     "com.lihaoyi" %%% "utest" % "0.8.4" % "test"
   ),
   testFrameworks += new TestFramework("utest.runner.Framework"),
