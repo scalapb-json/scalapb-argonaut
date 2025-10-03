@@ -715,7 +715,7 @@ object JsonFormat {
   ): PValue = {
     protoType match {
       case TYPE_UINT32 | TYPE_FIXED32 =>
-        value.fold(
+        value.fold[PValue](
           jsonNull = onError,
           jsonBool = _ => onError,
           jsonNumber = x => parseUint32(x.toBigDecimal.toString()),
@@ -724,7 +724,7 @@ object JsonFormat {
           jsonObject = _ => onError
         )
       case TYPE_SINT32 | TYPE_INT32 | TYPE_SFIXED32 =>
-        value.fold(
+        value.fold[PValue](
           jsonNull = onError,
           jsonBool = _ => onError,
           jsonNumber = x => parseInt32(x.toBigDecimal.toString()),
@@ -733,7 +733,7 @@ object JsonFormat {
           jsonObject = x => onError
         )
       case TYPE_UINT64 | TYPE_FIXED64 =>
-        value.fold(
+        value.fold[PValue](
           jsonNull = onError,
           jsonBool = _ => onError,
           jsonNumber = x => parseUint64(x.toBigDecimal.toString),
@@ -742,7 +742,7 @@ object JsonFormat {
           jsonObject = _ => onError
         )
       case TYPE_SINT64 | TYPE_INT64 | TYPE_SFIXED64 =>
-        value.fold(
+        value.fold[PValue](
           jsonNull = onError,
           jsonBool = _ => onError,
           jsonNumber = x => parseInt64(x.toBigDecimal.toString),
@@ -751,7 +751,7 @@ object JsonFormat {
           jsonObject = _ => onError
         )
       case TYPE_DOUBLE =>
-        value.fold(
+        value.fold[PValue](
           jsonNull = onError,
           jsonBool = _ => onError,
           jsonNumber = x => parseDouble(x.toBigDecimal.toString),
@@ -760,7 +760,7 @@ object JsonFormat {
           jsonObject = _ => onError
         )
       case TYPE_FLOAT =>
-        value.fold(
+        value.fold[PValue](
           jsonNull = onError,
           jsonBool = _ => onError,
           jsonNumber = x => parseFloat(x.toBigDecimal.toString),
