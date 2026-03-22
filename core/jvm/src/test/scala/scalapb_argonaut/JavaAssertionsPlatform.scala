@@ -8,7 +8,7 @@ import scalapb_json.JsonFormatException
 import JsonFormatSpecBase.assertThrows
 
 trait JavaAssertionsPlatform {
-  self: TestSuite with JavaAssertions =>
+  self: TestSuite & JavaAssertions =>
 
   def registeredCompanions: Seq[GeneratedMessageCompanion[?]]
 
@@ -49,7 +49,7 @@ trait JavaAssertionsPlatform {
     json: String,
     expected: T
   )(implicit
-    cmp: GeneratedMessageCompanion[T] with JavaProtoSupport[T, J],
+    cmp: GeneratedMessageCompanion[T] & JavaProtoSupport[T, J],
     parserContext: ParserContext
   ) = {
     val parsedJava: J = {
@@ -65,7 +65,7 @@ trait JavaAssertionsPlatform {
 
   def assertFails[T <: scalapb.GeneratedMessage, J <: GeneratedMessageV3](
     json: String,
-    cmp: GeneratedMessageCompanion[T] with JavaProtoSupport[T, J]
+    cmp: GeneratedMessageCompanion[T] & JavaProtoSupport[T, J]
   )(implicit parserContext: ParserContext) = {
     val builder = cmp.toJavaProto(cmp.defaultInstance).newBuilderForType()
     assertThrows[InvalidProtocolBufferException] {
