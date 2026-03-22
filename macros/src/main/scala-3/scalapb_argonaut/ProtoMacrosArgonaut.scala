@@ -30,7 +30,7 @@ object ProtoMacrosArgonaut {
 
   extension [A <: GeneratedMessage](companion: GeneratedMessageCompanion[A]) {
     def fromJson(json: String): A =
-      JsonFormat.fromJsonString[A](json)(companion)
+      JsonFormat.fromJsonString[A](json)(using companion)
 
     def fromJsonOpt(json: String): Option[A] =
       try {
@@ -95,7 +95,7 @@ object ProtoMacrosArgonaut {
     JsonFormat.fromJsonString[A](str)
 
     '{
-      JsonFormat.fromJsonString[A](${ Expr(str) })($companion)
+      JsonFormat.fromJsonString[A](${ Expr(str) })(using $companion)
     }
   }
 }
