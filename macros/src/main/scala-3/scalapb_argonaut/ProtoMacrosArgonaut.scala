@@ -86,7 +86,6 @@ object ProtoMacrosArgonaut {
     json: Expr[String],
     companion: Expr[GeneratedMessageCompanion[A]]
   )(using quote: Quotes): Expr[A] = {
-    import quote.reflect.report
     val str = json.valueOrAbort
     val clazz = Class.forName(Type.show[A] + "$")
     implicit val c: GeneratedMessageCompanion[A] =
