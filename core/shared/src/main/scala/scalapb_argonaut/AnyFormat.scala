@@ -17,7 +17,7 @@ object AnyFormat {
       )
 
     // Unpack the message...
-    val message = any.unpack(cmp)
+    val message = any.unpack(using cmp)
 
     // ... and add the @type marker to the resulting JSON
     printer.toJson(message).obj match {
@@ -39,7 +39,7 @@ object AnyFormat {
             val cmp = parser.typeRegistry
               .findType(typeUrl)
               .getOrElse(throw new JsonFormatException(s"""Unknown type: "$typeUrl""""))
-            val message = parser.fromJson(json, true)(cmp)
+            val message = parser.fromJson(json, true)(using cmp)
             PBAny(typeUrl = typeUrl, value = message.toByteString)
 
           case unknown =>

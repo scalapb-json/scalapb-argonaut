@@ -72,7 +72,7 @@ trait JavaAssertionsPlatform {
       parserContext.javaParser.merge(json, builder)
     }
     assertThrows[JsonFormatException] {
-      parserContext.scalaParser.fromJsonString[T](json)(cmp)
+      parserContext.scalaParser.fromJsonString[T](json)(using cmp)
     }
   }
 }
