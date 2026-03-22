@@ -15,7 +15,14 @@ val tagOrHash = Def.setting {
   else tagName.value
 }
 
-val unusedWarnings = Seq("-Ywarn-unused:imports")
+val unusedWarnings = Def.setting(
+  scalaBinaryVersion.value match {
+    case "2.12" =>
+      Seq("-Ywarn-unused:imports")
+    case _ =>
+      Seq("-Wunused:imports")
+  }
+)
 
 lazy val macros = project
   .in(file("macros"))
@@ -145,21 +152,22 @@ lazy val commonSettings = Def.settings(
   (Compile / unmanagedResources) += (LocalRootProject / baseDirectory).value / "LICENSE.txt",
   scalaVersion := Scala212,
   crossScalaVersions := Seq(Scala212, "2.13.18", "3.3.7"),
+  scalacOptions ++= unusedWarnings.value,
   scalacOptions ++= {
     scalaBinaryVersion.value match {
       case "3" =>
         Nil
       case "2.13" =>
-        unusedWarnings ++ Seq(
+        Seq(
           "-Xsource:3-cross"
         )
       case "2.12" =>
-        unusedWarnings ++ Seq(
+        Seq(
           "-Xsource:3"
         )
     }
   },
-  Seq(Compile, Test).flatMap(c => c / console / scalacOptions --= unusedWarnings),
+  Seq(Compile, Test).flatMap(c => c / console / scalacOptions --= unusedWarnings.value),
   scalacOptions ++= Seq("-feature", "-deprecation", "-language:existentials"),
   description := "Json/Protobuf convertors for ScalaPB",
   licenses += ("MIT", url("https://opensource.org/licenses/MIT")),
