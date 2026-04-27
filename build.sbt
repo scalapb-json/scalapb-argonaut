@@ -117,6 +117,9 @@ val scalapbArgonaut = crossProject(JVMPlatform, JSPlatform, NativePlatform)
       }
     },
   )
+  .nativeSettings(
+    evictionErrorLevel := Level.Warn,
+  )
   .platformsSettings(JVMPlatform, JSPlatform)(
     Seq(Compile, Test).map { x =>
       x / unmanagedSourceDirectories += {
