@@ -125,7 +125,7 @@ val scalapbArgonaut = crossProject(JVMPlatform, JSPlatform, NativePlatform)
       x / unmanagedSourceDirectories += {
         baseDirectory.value.getParentFile / "jvm-js" / "src" / Defaults.nameForSrc(
           x.name
-        ) / "scala",
+        ) / "scala"
       }
     },
   )
