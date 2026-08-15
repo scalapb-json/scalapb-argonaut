@@ -1,4 +1,4 @@
-import scalapb.compiler.Version._
+import scalapb.compiler.Version.{scalaBinaryVersion => _, _}
 import sbtrelease.ReleaseStateTransformations._
 import sbtcrossproject.CrossPlugin.autoImport.crossProject
 
@@ -11,7 +11,7 @@ val tagName = Def.setting {
 }
 
 val tagOrHash = Def.setting {
-  if (isSnapshot.value) sys.process.Process("git rev-parse HEAD").lineStream_!.head
+  if (isSnapshot.value) sys.process.Process("git rev-parse HEAD").lazyLines_!.head
   else tagName.value
 }
 
@@ -30,7 +30,7 @@ lazy val macros = project
     commonSettings,
     name := UpdateReadme.scalapbArgonautMacrosName,
     libraryDependencies ++= Seq(
-      "io.github.scalapb-json" %%% "scalapb-json-macros" % scalapbJsonCommonVersion.value,
+      "io.github.scalapb-json" %% "scalapb-json-macros" % scalapbJsonCommonVersion.value,
     ),
   )
   .dependsOn(
@@ -42,9 +42,9 @@ lazy val tests = crossProject(JVMPlatform)
   .settings(
     commonSettings,
     noPublish,
-    libraryDependencies += "org.scalatest" %%% "scalatest" % "3.2.20" % "test",
+    libraryDependencies += "org.scalatest" %% "scalatest" % "3.2.20" % "test",
   )
-  .configure(_ dependsOn macros)
+  .configure(_.dependsOn(macros))
   .dependsOn(
     scalapbArgonaut % "test->test"
   )
@@ -66,19 +66,6 @@ val scalapbArgonaut = crossProject(JVMPlatform, JSPlatform, NativePlatform)
   .settings(
     commonSettings,
     name := UpdateReadme.scalapbArgonautName,
-    (Compile / packageSrc / mappings) ++= (Compile / managedSources).value.map { f =>
-      // https://github.com/sbt/sbt-buildinfo/blob/v0.7.0/src/main/scala/sbtbuildinfo/BuildInfoPlugin.scala#L58
-      val buildInfoDir = "sbt-buildinfo"
-      val path = if (f.getAbsolutePath.contains(buildInfoDir)) {
-        (file(buildInfoPackage.value) / f
-          .relativeTo((Compile / sourceManaged).value / buildInfoDir)
-          .get
-          .getPath).getPath
-      } else {
-        f.relativeTo((Compile / sourceManaged).value).get.getPath
-      }
-      (f, path)
-    },
     buildInfoPackage := "scalapb_argonaut",
     buildInfoObject := "ScalapbArgonautBuildInfo",
     buildInfoKeys := Seq[BuildInfoKey](
@@ -98,7 +85,7 @@ val scalapbArgonaut = crossProject(JVMPlatform, JSPlatform, NativePlatform)
       ) -> (Test / sourceManaged).value
     ),
     libraryDependencies ++= Seq(
-      "com.github.scalaprops" %%% "scalaprops-shapeless" % "0.6.0" % "test",
+      "com.github.scalaprops" %% "scalaprops-shapeless" % "0.6.0" % "test",
       "com.google.protobuf" % "protobuf-java-util" % "3.25.9" % "test",
       "com.google.protobuf" % "protobuf-java" % "3.25.9" % "protobuf"
     )
@@ -138,8 +125,6 @@ val scalapbArgonaut = crossProject(JVMPlatform, JSPlatform, NativePlatform)
     )
   )
 
-commonSettings
-
 val noPublish = Seq(
   PgpKeys.publishLocalSigned := {},
   PgpKeys.publishSigned := {},
@@ -148,10 +133,10 @@ val noPublish = Seq(
   Compile / publishArtifact := false
 )
 
-noPublish
-
 lazy val commonSettings = Def.settings(
   scalapropsCoreSettings,
+  evictionErrorLevel := Level.Warn,
+  exportJars := false,
   (Compile / unmanagedResources) += (LocalRootProject / baseDirectory).value / "LICENSE.txt",
   scalaVersion := Scala212,
   crossScalaVersions := Seq(Scala212, "2.13.18", "3.3.8"),
@@ -173,19 +158,19 @@ lazy val commonSettings = Def.settings(
   Seq(Compile, Test).flatMap(c => c / console / scalacOptions --= unusedWarnings.value),
   scalacOptions ++= Seq("-feature", "-deprecation", "-language:existentials"),
   description := "Json/Protobuf convertors for ScalaPB",
-  licenses += ("MIT", url("https://opensource.org/licenses/MIT")),
+  licenses += ("MIT", uri("https://opensource.org/licenses/MIT")),
   organization := "io.github.scalapb-json",
-  Project.inConfig(Test)(sbtprotoc.ProtocPlugin.protobufConfigSettings),
+  ProjectExtra.inConfig(Test)(sbtprotoc.ProtocPlugin.protobufConfigSettings),
   Compile / PB.targets := Nil,
   (Test / PB.protoSources) := Seq(baseDirectory.value.getParentFile / "shared/src/test/protobuf"),
   scalapbJsonCommonVersion := "0.11.0",
   argonautVersion := "6.3.13",
   libraryDependencies ++= Seq(
-    "com.github.scalaprops" %%% "scalaprops" % "0.11.0" % "test",
-    "io.github.scalapb-json" %%% "scalapb-json-common" % scalapbJsonCommonVersion.value,
-    "com.thesamet.scalapb" %%% "scalapb-runtime" % scalapbVersion % "protobuf,test",
-    "io.github.argonaut-io" %%% "argonaut" % argonautVersion.value,
-    "com.lihaoyi" %%% "utest" % "0.8.4" % "test"
+    "com.github.scalaprops" %% "scalaprops" % "0.11.0" % "test",
+    "io.github.scalapb-json" %% "scalapb-json-common" % scalapbJsonCommonVersion.value,
+    "com.thesamet.scalapb" %% "scalapb-runtime" % scalapbVersion % "protobuf,test",
+    "io.github.argonaut-io" %% "argonaut" % argonautVersion.value,
+    "com.lihaoyi" %% "utest" % "0.8.4" % "test"
   ),
   testFrameworks += new TestFramework("utest.runner.Framework"),
   (Global / pomExtra) := {
@@ -255,9 +240,12 @@ lazy val commonSettings = Def.settings(
 val scalapbArgonautJVM = scalapbArgonaut.jvm
 val scalapbArgonautJS = scalapbArgonaut.js
 
-commonSettings
-publishArtifact := false
-publish := {}
-publishLocal := {}
-PgpKeys.publishSigned := {}
-PgpKeys.publishLocalSigned := {}
+val scalapbArgonautRoot = rootProject.autoAggregate.settings(
+  noPublish,
+  commonSettings,
+  publishArtifact := false,
+  publish := {},
+  publishLocal := {},
+  PgpKeys.publishSigned := {},
+  PgpKeys.publishLocalSigned := {}
+)
