@@ -101,15 +101,15 @@ object JsonFormatSpec extends TestSuite with JsonFormatSpecBase {
       |""".stripMargin
 
   override val tests = Tests {
-    "Empty object should give empty json" - {
+    test("Empty object should give empty json") {
       assert(JsonFormat.toJson(MyTest()) == Json.obj())
     }
 
-    "Empty object should give empty json for MyTest3" - {
+    test("Empty object should give empty json for MyTest3") {
       assert(JsonFormat.toJson(MyTest3()) == Json.obj())
     }
 
-    "Zero maps should give correct json" - {
+    test("Zero maps should give correct json") {
       assert(
         JsonFormat.toJson(
           MyTest(
@@ -126,7 +126,7 @@ object JsonFormatSpec extends TestSuite with JsonFormatSpecBase {
       )
     }
 
-    "Zero maps should give correct json for MyTest3" - {
+    test("Zero maps should give correct json for MyTest3") {
       assert(
         JsonFormat.toJson(
           MyTest3(
@@ -143,14 +143,14 @@ object JsonFormatSpec extends TestSuite with JsonFormatSpecBase {
       )
     }
 
-    "Set treat should give correct json" - {
+    test("Set treat should give correct json") {
       assert(
         JsonFormat.toJson(MyTest(trickOrTreat = MyTest.TrickOrTreat.Treat(MyTest()))) ==
           parse("""{"treat": {}}""").getOrError
       )
     }
 
-    "Parse treat should give correct proto with proto2" - {
+    test("Parse treat should give correct proto with proto2") {
       assert(
         JsonFormat.fromJsonString[MyTest]("""{"treat": {"hello": "x"}}""") ==
           MyTest(trickOrTreat = MyTest.TrickOrTreat.Treat(MyTest(hello = Some("x"))))
@@ -161,7 +161,7 @@ object JsonFormatSpec extends TestSuite with JsonFormatSpecBase {
       )
     }
 
-    "Parse treat should give correct proto with proto3" - {
+    test("Parse treat should give correct proto with proto3") {
       assert(
         JsonFormat.fromJsonString[MyTest3]("""{"treat": {"s": "x"}}""") ==
           MyTest3(trickOrTreat = MyTest3.TrickOrTreat.Treat(MyTest3(s = "x")))
@@ -172,7 +172,7 @@ object JsonFormatSpec extends TestSuite with JsonFormatSpecBase {
       )
     }
 
-    "JsonFormat should encode and decode enums for proto3" - {
+    test("JsonFormat should encode and decode enums for proto3") {
       val v1Value = MyTest3(optEnum = MyTest3.MyEnum3.V1)
       assert(JsonFormat.toJson(v1Value) == parse("""{"optEnum": "V1"}""").getOrError)
       val defaultValue = MyTest3(optEnum = MyTest3.MyEnum3.UNKNOWN)
@@ -183,7 +183,7 @@ object JsonFormatSpec extends TestSuite with JsonFormatSpecBase {
       )
     }
 
-    "parsing one offs should work correctly for issue 315" - {
+    test("parsing one offs should work correctly for issue 315") {
       assert(
         JsonFormat.fromJsonString[jsontest.issue315.Msg]("""
       {
@@ -199,7 +199,7 @@ object JsonFormatSpec extends TestSuite with JsonFormatSpecBase {
       )
     }
 
-    "parsing null should give default value" - {
+    test("parsing null should give default value") {
       assert(JsonFormat.fromJsonString[jsontest.test.MyTest]("""
       {
             "optMessage" : null,
@@ -209,15 +209,15 @@ object JsonFormatSpec extends TestSuite with JsonFormatSpecBase {
       }""") == jsontest.test.MyTest())
     }
 
-    "TestProto should be TestJson when converted to Proto" - {
+    test("TestProto should be TestJson when converted to Proto") {
       assert(JsonFormat.toJson(TestProto) == parse(TestJson).getOrError)
     }
 
-    "TestJson should be TestProto when parsed from json" - {
+    test("TestJson should be TestProto when parsed from json") {
       assert(JsonFormat.fromJsonString[MyTest](TestJson) == TestProto)
     }
 
-    "Empty object should give full json if including default values" - {
+    test("Empty object should give full json if including default values") {
       assert(
         new Printer(includingDefaultValueFields = true).toJson(MyTest()) ==
           parse("""{
@@ -240,7 +240,7 @@ object JsonFormatSpec extends TestSuite with JsonFormatSpecBase {
       )
     }
 
-    "Empty object should with preserve field names should work" - {
+    test("Empty object should with preserve field names should work") {
       assert(
         new Printer(includingDefaultValueFields = true, preservingProtoFieldNames = true)
           .toJson(MyTest()) ==
@@ -264,18 +264,18 @@ object JsonFormatSpec extends TestSuite with JsonFormatSpecBase {
       )
     }
 
-    "TestProto should format int64 as JSON string" - {
+    test("TestProto should format int64 as JSON string") {
       assert(new Printer().print(MyTest(bazinga = Some(642))) == """{"bazinga":"642"}""")
     }
 
-    "TestProto should format int64 as JSON number" - {
+    test("TestProto should format int64 as JSON number") {
       assert(
         new Printer(formattingLongAsNumber = true).print(MyTest(bazinga = Some(642))) ==
           """{"bazinga":642}"""
       )
     }
 
-    "TestProto should parse numbers formatted as JSON string" - {
+    test("TestProto should parse numbers formatted as JSON string") {
       val parser = new Parser()
       def validateAccepts(json: String, expected: IntFields) = {
         assert(parser.fromJsonString[IntFields](json) == expected)
@@ -351,7 +351,7 @@ object JsonFormatSpec extends TestSuite with JsonFormatSpecBase {
       validateRejects("""{"fixlong":"-1"}""")
     }
 
-    "TestProto should produce valid JSON output for unsigned integers" - {
+    test("TestProto should produce valid JSON output for unsigned integers") {
       val uint32max: Long = (1L << 32) - 1
       assert(
         JsonFormat.toJson(IntFields(uint = Some(uint32max.toInt))) ==
@@ -382,7 +382,7 @@ object JsonFormatSpec extends TestSuite with JsonFormatSpecBase {
       )
     }
 
-    "TestProto should parse an enum formatted as number" - {
+    test("TestProto should parse an enum formatted as number") {
       assert(
         new Parser().fromJsonString[MyTest]("""{"optEnum":1}""") ==
           MyTest(optEnum = Some(MyEnum.V1))
@@ -393,7 +393,7 @@ object JsonFormatSpec extends TestSuite with JsonFormatSpecBase {
       )
     }
 
-    "TestProto should parse original field names" - {
+    test("TestProto should parse original field names") {
       assert(
         new Parser().fromJsonString[MyTest]("""{"opt_enum":1}""") ==
           MyTest(optEnum = Some(MyEnum.V1))
@@ -404,14 +404,14 @@ object JsonFormatSpec extends TestSuite with JsonFormatSpecBase {
       )
     }
 
-    "PreservedTestJson should be TestProto when parsed from json" - {
+    test("PreservedTestJson should be TestProto when parsed from json") {
       assert(
         new Parser().fromJsonString[MyTest](PreservedTestJson) ==
           TestProto
       )
     }
 
-    "TestAllTypesProto should parse NaNs" - {
+    test("TestAllTypesProto should parse NaNs") {
       val i = s"""{
         "optionalDouble": "NaN",
         "optionalFloat": "NaN"
@@ -429,7 +429,7 @@ object JsonFormatSpec extends TestSuite with JsonFormatSpecBase {
       assert(f.flatMap(_.number) == None) // argonaut does not support "NaN" to `Float`
     }
 
-    "TestAllTypesProto should parse Infinity" - {
+    test("TestAllTypesProto should parse Infinity") {
       val i = s"""{
         "optionalDouble": "Infinity",
         "optionalFloat": "Infinity"
@@ -447,7 +447,7 @@ object JsonFormatSpec extends TestSuite with JsonFormatSpecBase {
       )
     }
 
-    "TestAllTypesProto should parse -Infinity" - {
+    test("TestAllTypesProto should parse -Infinity") {
       val i = s"""{
         "optionalDouble": "-Infinity",
         "optionalFloat": "-Infinity"
@@ -465,7 +465,7 @@ object JsonFormatSpec extends TestSuite with JsonFormatSpecBase {
       )
     }
 
-    "TestAllTypesProto should take strings" - {
+    test("TestAllTypesProto should take strings") {
       val i = s"""{
         "optionalDouble": "1.4",
         "optionalFloat": "1.4"
@@ -496,32 +496,32 @@ object JsonFormatSpec extends TestSuite with JsonFormatSpecBase {
     val anyEnabledParser = new Parser(typeRegistry = anyEnabledTypeRegistry)
     val anyEnabledPrinter = new Printer(typeRegistry = anyEnabledTypeRegistry)
 
-    "TestProto packed as any should give TestJsonWithType after JSON serialization" - {
+    test("TestProto packed as any should give TestJsonWithType after JSON serialization") {
       val any = PBAny.pack(TestProto)
 
       assert(anyEnabledPrinter.toJson(any) == parse(TestJsonWithType).getOrError)
     }
 
-    "TestJsonWithType should be TestProto packed as any when parsed from JSON" - {
+    test("TestJsonWithType should be TestProto packed as any when parsed from JSON") {
       val out = anyEnabledParser.fromJson[PBAny](parse(TestJsonWithType).getOrError)
       assert(out.unpack[MyTest] == TestProto)
     }
 
-    "toJsonString should generate correct JSON for messages with custom collection type" - {
+    test("toJsonString should generate correct JSON for messages with custom collection type") {
       val studio = Studio().addGuitars(Guitar(numberOfStrings = 12))
       val expectedStudioJsonString = """{"guitars":[{"numberOfStrings":12}]}"""
       val studioJsonString = JsonFormat.toJsonString(studio)
       assert(studioJsonString == expectedStudioJsonString)
     }
 
-    "fromJsonString should parse JSON correctly to message with custom collection type" - {
+    test("fromJsonString should parse JSON correctly to message with custom collection type") {
       val expectedStudio = Studio().addGuitars(Guitar(numberOfStrings = 12))
       val studioJsonString = """{"guitars":[{"numberOfStrings":12}]}"""
       val studio = JsonFormat.fromJsonString[Studio](studioJsonString)
       assert(studio == expectedStudio)
     }
 
-    "formatEnumAsNumber should format enums as number" - {
+    test("formatEnumAsNumber should format enums as number") {
       val p = MyTest().update(_.optEnum := MyEnum.V2)
       assert(
         new Printer(formattingEnumsAsNumber = true).toJson(p) == parse(
@@ -530,14 +530,14 @@ object JsonFormatSpec extends TestSuite with JsonFormatSpecBase {
       )
     }
 
-    "unknown fields should not get rejected when ignoreUnknownFields is set" - {
+    test("unknown fields should not get rejected when ignoreUnknownFields is set") {
       val parser = new Parser().ignoringUnknownFields
       parser.fromJsonString[MyTest]("""{"random_field_123": 3}""")
       // There is special for @type field for anys, lets make sure they get rejected too
       parser.fromJsonString[MyTest]("""{"@type": "foo"}""")
     }
 
-    "FieldMask" - {
+    test("FieldMask") {
       // https://github.com/google/protobuf/blob/47b7d2c7ca/java/util/src/test/java/com/google/protobuf/util/JsonFormatTest.java#L761-L770
       val message = TestFieldMask(Some(FieldMask(Seq("foo.bar", "baz", "foo_bar.baz"))))
       val json = """{"fieldMaskValue":"foo.bar,baz,fooBar.baz"}"""
@@ -545,7 +545,7 @@ object JsonFormatSpec extends TestSuite with JsonFormatSpecBase {
       assert(JsonFormat.fromJsonString[TestFieldMask](json) == message)
     }
 
-    "booleans should be accepted as string" - {
+    test("booleans should be accepted as string") {
       assert(
         JsonFormat.fromJsonString[MyTest]("""{"optBool": "true"}""") == MyTest(optBool = Some(true))
       )
