@@ -10,7 +10,7 @@ object WellKnownTypesSpec extends TestSuite {
   val durationProto = WellKnownTest(duration = Some(Duration(146, 3455)))
 
   override val tests = Tests {
-    "duration should serialize and parse correctly" - {
+    test("duration should serialize and parse correctly") {
       val durationJson =
         """{
           |  "duration": "146.000003455s"

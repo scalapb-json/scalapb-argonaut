@@ -50,7 +50,7 @@ object AnyFormatSpec extends TestSuite with JavaAssertions {
   def UnregisteredParser = JsonFormat.parser
 
   val tests = Tests {
-    "Any should fail to serialize if its respective companion is not registered" - {
+    test("Any should fail to serialize if its respective companion is not registered") {
       try {
         UnregisteredPrinter.toJson(AnyExample)
         sys.error("fail")
@@ -59,7 +59,7 @@ object AnyFormatSpec extends TestSuite with JavaAssertions {
       }
     }
 
-    "Any should fail to deserialize if its respective companion is not registered" - {
+    test("Any should fail to deserialize if its respective companion is not registered") {
       try {
         UnregisteredParser.fromJson[PBAny](AnyJson)
         sys.error("fail")
@@ -68,11 +68,11 @@ object AnyFormatSpec extends TestSuite with JavaAssertions {
       }
     }
 
-    "Any should serialize correctly if its respective companion is registered" - {
+    test("Any should serialize correctly if its respective companion is registered") {
       assert(ScalaJsonPrinter.toJson(AnyExample) == AnyJson)
     }
 
-    "Any should fail to serialize with a custom URL prefix if specified" - {
+    test("Any should fail to serialize with a custom URL prefix if specified") {
       try {
         ScalaJsonPrinter.toJson(CustomPrefixAny)
         sys.error("fail")
@@ -81,7 +81,7 @@ object AnyFormatSpec extends TestSuite with JavaAssertions {
       }
     }
 
-    "Any should fail to deserialize for a non-Google-prefixed type URL" - {
+    test("Any should fail to deserialize for a non-Google-prefixed type URL") {
       try {
         ScalaJsonParser.fromJson[PBAny](CustomPrefixJson)
         sys.error("fail")
@@ -90,16 +90,16 @@ object AnyFormatSpec extends TestSuite with JavaAssertions {
       }
     }
 
-    "Any should deserialize correctly if its respective companion is registered" - {
+    test("Any should deserialize correctly if its respective companion is registered") {
       assert(ScalaJsonParser.fromJson[PBAny](AnyJson) == AnyExample)
     }
 
-    "Any should resolve printers recursively" - {
+    test("Any should resolve printers recursively") {
       val packed = PBAny.pack(ManyExample)
       assert(ScalaJsonPrinter.toJson(packed) == ManyPackedJson)
     }
 
-    "Any should resolve parsers recursively" - {
+    test("Any should resolve parsers recursively") {
       assert(ScalaJsonParser.fromJson[PBAny](ManyPackedJson).unpack[ManyAnyTest] == ManyExample)
     }
   }

@@ -21,7 +21,7 @@ object OneOfSpec extends TestSuite {
   )
 
   override val tests = Tests {
-    "oneof" - {
+    test("oneof") {
       examples.foreach { case (message: OneOf, json: String) =>
         assert(
           new Printer().toJson(message) == parse(json).getOrError
@@ -45,7 +45,7 @@ object OneOfSpec extends TestSuite {
       }
     }
 
-    "dictionary test should preserve zero values in one of" - {
+    test("dictionary test should preserve zero values in one of") {
       val message = Dictionary(Seq(Pair("myKey", Uint32Value(0))))
 
       assert(

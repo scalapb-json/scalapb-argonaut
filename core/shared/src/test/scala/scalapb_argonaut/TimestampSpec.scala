@@ -8,7 +8,7 @@ import EitherOps._
 
 object TimestampSpec extends TestSuite {
   override val tests = Tests {
-    "timestamp should serialize and parse correctly" - {
+    test("timestamp should serialize and parse correctly") {
       val timestampJson =
         """{
           |  "timestamp": "2016-09-16T12:35:24.375123456Z"

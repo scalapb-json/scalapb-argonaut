@@ -32,11 +32,11 @@ object StructFormatSpecJVM extends TestSuite with JavaAssertions {
   )
 
   override val tests = Tests {
-    "Empty value should be serialized to null" - {
+    test("Empty value should be serialized to null") {
       assert(JavaJsonPrinter.print(com.google.protobuf.Value.newBuilder().build()) == "null")
     }
 
-    "Value should be serialized the same as in Java (and parsed back to original)" - {
+    test("Value should be serialized the same as in Java (and parsed back to original)") {
       assertJsonIsSameAsJava(Value(kind = Value.Kind.NumberValue(1.0)))
       assertJsonIsSameAsJava(Value(kind = Value.Kind.NumberValue(-25)))
       assertJsonIsSameAsJava(Value(kind = Value.Kind.StringValue("boo")))
@@ -64,18 +64,18 @@ object StructFormatSpecJVM extends TestSuite with JavaAssertions {
       )
     }
 
-    "Struct should be serialized the same as in Java (and parsed back to original)" - {
+    test("Struct should be serialized the same as in Java (and parsed back to original)") {
       assertJsonIsSameAsJava(Struct())
       assertJsonIsSameAsJava(StructExample)
       assertJsonIsSameAsJava(StructExample2)
     }
 
-    "ListValue should be serialized the same as in Java (and parsed back to original)" - {
+    test("ListValue should be serialized the same as in Java (and parsed back to original)") {
       assertJsonIsSameAsJava(ListValue())
       assertJsonIsSameAsJava(ListValueExample)
     }
 
-    "NullValue should be serialized and parsed from JSON correctly" - {
+    test("NullValue should be serialized and parsed from JSON correctly") {
       assert(javaParse("""{"nv": 0}""", jsontest.Test3.StructTest.newBuilder).toString == "")
       assert(
         javaParse("""{"repNv": [0,0.0,0]}""", jsontest.Test3.StructTest.newBuilder).toString ==

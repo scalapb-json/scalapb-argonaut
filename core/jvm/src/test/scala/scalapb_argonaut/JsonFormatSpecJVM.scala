@@ -26,12 +26,12 @@ object JsonFormatSpecJVM extends TestSuite with JsonFormatSpecBase {
   )
 
   override val tests = Tests {
-    "fromJsonString should read json produced by Java" - {
+    test("fromJsonString should read json produced by Java") {
       val javaJson = JavaJsonFormat.printer().print(MyTest.toJavaProto(TestProto))
       assert(JsonFormat.fromJsonString[MyTest](javaJson) == TestProto)
     }
 
-    "Java parser should read json strings produced by us" - {
+    test("Java parser should read json strings produced by us") {
       val b = jsontest.Test.MyTest.newBuilder
       JavaJsonFormat.parser().merge(JsonFormat.toJsonString(TestProto), b)
       assert(TestProto == MyTest.fromJavaProto(b.build))
@@ -44,13 +44,13 @@ object JsonFormatSpecJVM extends TestSuite with JsonFormatSpecBase {
     val anyEnabledTypeRegistry = TypeRegistry.empty.addMessageByCompanion(TestProto.companion)
     val anyEnabledParser = new Parser(typeRegistry = anyEnabledTypeRegistry)
 
-    "Any should parse JSON produced by Java for a packed TestProto" - {
+    test("Any should parse JSON produced by Java for a packed TestProto") {
       val javaAny = com.google.protobuf.Any.pack(MyTest.toJavaProto(TestProto))
       val javaJson = anyEnabledJavaPrinter.print(javaAny)
       assert(anyEnabledParser.fromJsonString[PBAny](javaJson).unpack[MyTest] == TestProto)
     }
 
-    "booleans should be accepted as string" - {
+    test("booleans should be accepted as string") {
       assert(
         JsonFormat.fromJsonString[MyTest]("""{"optBool": "true"}""") ==
           MyTest(optBool = Some(true))
@@ -61,19 +61,23 @@ object JsonFormatSpecJVM extends TestSuite with JsonFormatSpecBase {
       )
     }
 
-    "unknown fields should get rejected" - new DefaultParserContext {
-      assertFails("""{"random_field_123": 3}""", MyTest)
-      // There is special for @type field for anys, lets make sure they get rejected too
-      assertFails("""{"@type": "foo"}""", MyTest)
+    test("unknown fields should get rejected") {
+      new DefaultParserContext {
+        assertFails("""{"random_field_123": 3}""", MyTest)
+        // There is special for @type field for anys, lets make sure they get rejected too
+        assertFails("""{"@type": "foo"}""", MyTest)
+      }
     }
 
-    "unknown fields should not get rejected when ignoreUnknownFields is set" - new IgnoringUnknownParserContext {
-      assertParse("""{"random_field_123": 3}""", MyTest())
-      // There is special for @type field for anys, lets make sure they get rejected too
-      assertParse("""{"@type": "foo"}""", MyTest())
+    test("unknown fields should not get rejected when ignoreUnknownFields is set") {
+      new IgnoringUnknownParserContext {
+        assertParse("""{"random_field_123": 3}""", MyTest())
+        // There is special for @type field for anys, lets make sure they get rejected too
+        assertParse("""{"@type": "foo"}""", MyTest())
+      }
     }
 
-    "parser should reject out of range numeric values" - {
+    test("parser should reject out of range numeric values") {
       val maxLong = new BigInteger(String.valueOf(Long.MaxValue))
       val minLong = new BigInteger(String.valueOf(Long.MinValue))
       assertAcceptsNoQuotes("optionalInt64", maxLong.toString)
@@ -87,7 +91,7 @@ object JsonFormatSpecJVM extends TestSuite with JsonFormatSpecBase {
       assertRejects("optionalDouble", minDouble.multiply(moreThanOne).toString)
     }
 
-    "floats should not lose precision" - {
+    test("floats should not lose precision") {
       val obj = TestAllTypes(optionalFloat = Some(0.41804487f))
       val javaJson = JavaJsonFormat.printer().print(TestAllTypes.toJavaProto(obj))
       val scalaJson = JsonFormat.toJson(obj)

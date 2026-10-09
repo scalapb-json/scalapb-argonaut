@@ -10,11 +10,11 @@ object PrimitiveWrappersSpec extends TestSuite {
     A.apply(a)
 
   override val tests = Tests {
-    "Empty object should give empty json for Wrapper" - {
+    test("Empty object should give empty json for Wrapper") {
       assert(JsonFormat.toJson(Wrapper()) == render(Map.empty[String, Json]))
     }
 
-    "primitive values should serialize properly" - {
+    test("primitive values should serialize properly") {
       assert(
         JsonFormat.toJson(Wrapper(wBool = Some(false))) ==
           render(Map("wBool" -> Json.jBool(false)))
@@ -70,7 +70,7 @@ object PrimitiveWrappersSpec extends TestSuite {
       )
     }
 
-    "primitive values should parse properly" - {
+    test("primitive values should parse properly") {
       assert(
         JsonFormat.fromJson[Wrapper](render(Map("wBool" -> Json.jBool(false)))) ==
           Wrapper(wBool = Some(false))
